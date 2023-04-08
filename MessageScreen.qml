@@ -8,6 +8,10 @@ Screen {
 	property bool debugOutput : app.debugOutput
 	property int numberofItems:0
 	property int numberofItems2:0
+	property int message1Index: 0
+	property int message2Index: 0
+	property int message3Index: 0
+	property int message4Index: 0
 
 
 	onShown: {
@@ -15,7 +19,10 @@ Screen {
 		app.messageResult = ""
 		updatePlayersList();
 		updateMessageTextList();
-		radioButtonList1.currentIndex=0
+		listview1.currentIndex = message1Index
+		listview2.currentIndex = message2Index
+		radioButtonList1.currentIndex = message3Index
+		radioButtonList2.currentIndex = message4Index
 	}
 	
 	
@@ -277,6 +284,10 @@ Screen {
 		}
 
 		onClicked: {
+			message1Index = listview1.currentIndex
+			message2Index = listview1.currentIndex
+			message3Index = radioButtonList1.currentIndex
+			message4Index = radioButtonList2.currentIndex
 			qnumKeyboard.open("Volume (20 - 100)", saveVolumeLabel.inputText, app.messageVolume, 1,  saveVolume, validateVolume);
 			qnumKeyboard.maxTextLength = 3;
 			qnumKeyboard.state = "num_integer_clear_backspace";
@@ -488,6 +499,10 @@ Screen {
 		}
 
 		onClicked: {
+			message1Index = listview1.currentIndex
+			message2Index = listview1.currentIndex
+			message3Index = radioButtonList1.currentIndex
+			message4Index = radioButtonList2.currentIndex
 			qkeyboard.open("Nieuwe Text", saveNewTextLabel.inputText, saveNewText);
 		}
 	}

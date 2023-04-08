@@ -1,3 +1,7 @@
+1.0.1
+- timer added to update speaker config if changed (5 minutes)
+
+
 1.0.0
 - all new by oepi-loepi
 

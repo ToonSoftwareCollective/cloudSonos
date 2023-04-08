@@ -96,6 +96,8 @@ App {
 	property string  token: ""
 	property string  refreshToken : ""
 	property string  playFootballScores : ""
+	
+	
 
 	property variant settings : {
 		"showSonosIcon" : "true",
@@ -710,7 +712,7 @@ App {
 
 	Timer {
 		id: sonosPlayInfoTimer
-		interval: 2000
+		interval: 5000
 		triggeredOnStart: true
 		running: false
 		repeat: true
@@ -721,6 +723,17 @@ App {
 			getMetaData();
 		}
 	}
+	
+	Timer {
+		id: checkHouseholdTimer //check if speaker confioguration has changed
+		interval: 300000
+		triggeredOnStart: false
+		running: true
+		repeat: true
+		onTriggered: {
+			getHouseholdsAndGroups();
+		}
+	}	
 	
 	Timer {
 		id: setAfterTotalStartTimer

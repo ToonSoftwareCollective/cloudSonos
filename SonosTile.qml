@@ -315,7 +315,7 @@ Tile {
 	Text {
 		id: textNext
 		text: ">"
-		font.pixelSize: isNxt ? 17 : 13
+		font.pixelSize: isNxt ? 20 : 16
 		font.family: qfont.regular.name
 		font.bold: true
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
