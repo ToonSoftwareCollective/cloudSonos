@@ -397,7 +397,7 @@ Screen {
 					model3.clear()
 					numberofItems3 =  items.length
 					for (var i in items) {
-						console.log(items[i].name)
+						if (debugOutput) console.log(items[i].name)
 						app.favorites.push({"id": items[i].id, "name": items[i].name , "imageUrl": items[i].imageUrl});
 						listview3.model.append({name: app.favorites[i].name})
 					}
