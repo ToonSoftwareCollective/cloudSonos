@@ -58,41 +58,41 @@ Screen {
 		
 		switch (radioButtonList1.currentIndex) {
             case 1:
-                console.log("Option Ruben");
+                if (debugOutput) console.log("Option Ruben");
 				voice="Ruben"
                 break;
             case 2:
-                console.log("Option Lotte");
+                if (debugOutput) console.log("Option Lotte");
 				voice="Lotte"
                 break;
             default:
-                console.log("Invalid");
+                if (debugOutput) console.log("Invalid");
                 break;
         }
 		
 		switch (radioButtonList2.currentIndex) {
             case 1:
-                console.log("Option Fluister");
+                if (debugOutput) console.log("Option Fluister");
 				playMessage = "<amazon:effect name=\"whispered\">" + playMessage + "</amazon:effect>"
                 break;
             case 2:
-                console.log("Option langzaam");
+                if (debugOutput) console.log("Option langzaam");
 				playMessage = "<prosody rate=\"slow\">" + playMessage + "</prosody>"
                 break;
 			case 3:
-                console.log("Option snel");
+                if (debugOutput) console.log("Option snel");
 				playMessage = "<prosody rate=\"fast\">" + playMessage + "</prosody>"
                 break;
 			case 4:
-                console.log("Option laag");
+                if (debugOutput) console.log("Option laag");
 				playMessage = "<prosody pitch=\"-20%\">" + playMessage + "</prosody>"
                 break;
 			case 5:
-                console.log("Option hoog");
+                if (debugOutput) console.log("Option hoog");
 				playMessage = "<prosody pitch=\"high\">" + playMessage + "</prosody>"
                 break;
             default:
-                console.log("Invalid");
+                if (debugOutput) console.log("Invalid");
                 break;
         }
 
@@ -130,7 +130,7 @@ Screen {
 		model2.clear()
 		numberofItems2 =  app.messageTextArray.length
 		for (var i in app.messageTextArray) {
-			console.log(app.messageTextArray[i])
+			if (debugOutput) console.log(app.messageTextArray[i])
 			listview2.model.append({name: app.messageTextArray[i]})
 		}
 	}
