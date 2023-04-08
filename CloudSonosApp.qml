@@ -95,8 +95,7 @@ App {
 	property string  passWord : ""
 	property string  token: ""
 	property string  refreshToken : ""
-	property string  playFootballScores : ""
-	
+	property bool    playFootballScores : false
 	
 
 	property variant settings : {
@@ -202,12 +201,12 @@ App {
 		}
 		
 		var tmpVoetbal = "";
-		if (playFootballScores) {
-			tmpVoetbal = "true";
-		} else {
-			tmpVoetbal = "false";
+		if(playFootballScores){
+			tmpVoetbal = "true"
+		}else{
+			tmpVoetbal = "false"
 		}
-		
+
 		var tmpdebugOutput = "";
 		if (debugOutput) {
 			tmpdebugOutput = "true";
