@@ -33,7 +33,7 @@ App {
 	//property url 	thumbnailIcon: "qrc:/tsc/SonosThumb.png"
 	property url 	thumbnailIcon: "qrc:/tsc/SonosSystrayIcon.png"
 	
-	property bool 	debugOutput: true
+	property bool 	debugOutput: false
 	
 	property bool 	isFirstRun: true
 	property int 	numberofTries:0
@@ -101,6 +101,7 @@ App {
 
 	property variant settings : {
 		"showSonosIcon" : "true",
+		"debugOutput": "false",
 		"sonosWarningShown" : "false",
 		"sonosName" : "",
 		"sonosNameVoetbalApp" : "",
@@ -157,6 +158,7 @@ App {
 		try {
 			var settingsString = sonosSettingsFile.read();
 			settings = JSON.parse(settingsString);
+			if (settings['debugOutput']) debugOutput = (settings['debugOutput'] == "true");
 			if (settings['showSonosIcon']) showSonosIcon = (settings['showSonosIcon'] == "true");
 			if (settings['sonosWarningShown']) sonosWarningShown = (settings['sonosWarningShown'] == "true");
 			if (settings['sonosName']) sonosName = (settings['sonosName']);
@@ -205,9 +207,17 @@ App {
 		} else {
 			tmpVoetbal = "false";
 		}
+		
+		var tmpdebugOutput = "";
+		if (debugOutput) {
+			tmpdebugOutput = "true";
+		} else {
+			tmpdebugOutput = "false";
+		}
 
 		settings["showSonosIcon"] = tmpTrayIcon;
 		settings["sonosWarningShown"] = tmpWarning;
+		settings["debugOutput"] = tmpdebugOutput;
 		settings["userName"] = userName;
 		settings["passWord"] = passWord;
 		settings["sonosName"] = sonosName;
@@ -482,14 +492,11 @@ App {
 					var containerType
                     var JsonObject= (JSON.parse(JsonString))
 					if(JsonObject.container && JsonObject.container.type){
-						console.log("*********sonos metaType = container")
 						containerType=JsonObject.container.type
 					}else if(JsonObject.hasOwnProperty('currentItem')){
-						console.log("*********sonos metaType = currentItem")
 						containerType=JsonObject.currentItem.track.type
 					}else{
 					}
-					console.log("*********sonos containerType: " + containerType)
 					stationName=""
 					currentItemName=""
 					currentItemTrackArtistName=""
@@ -712,12 +719,12 @@ App {
 
 	Timer {
 		id: sonosPlayInfoTimer
-		interval: 5000
+		interval: 6000
 		triggeredOnStart: true
 		running: false
 		repeat: true
 		onTriggered: {
-			sonosPlayInfoTimer.interval=5000
+			sonosPlayInfoTimer.interval=6000
 			getPlaybackStatus();
 			sleep(50);
 			getMetaData();
