@@ -555,14 +555,14 @@ Screen {
 						var containerType
 						var JsonObject= (JSON.parse(JsonString))
 						if(JsonObject.hasOwnProperty('container') & !JsonObject.hasOwnProperty('currentItem')){
-							console.log("*********sonos metaType = container")
+							if (debugOutput) console.log("*********sonos metaType = container")
 							containerType=JsonObject.container.type
 						}else if(JsonObject.hasOwnProperty('currentItem')){
-							console.log("*********sonos metaType = currentItem")
+							if (debugOutput) console.log("*********sonos metaType = currentItem")
 							containerType=JsonObject.currentItem.track.type
 						}else{
 						}
-						console.log("*********sonos containerType: " + containerType)
+						if (debugOutput) console.log("*********sonos containerType: " + containerType)
 						if(containerType=="station"){
 							sonosModel.setProperty(i, "track", JsonObject.container.name)
 							sonosModel.setProperty(i, "artist", "Station")
@@ -572,25 +572,25 @@ Screen {
 								}
 							}
 						}else if(typeof containerType==="undefined"){
-							console.log("*********sonos  (undefined) imageUrl ="  + " geen" )
+							if (debugOutput) console.log("*********sonos  (undefined) imageUrl ="  + " geen" )
 							sonosModel.setProperty(i, "track", "Geen bron")
 							sonosModel.setProperty(i, "imageURL", "")
 							sonosModel.setProperty(i, "artist", "")
 							
 						}else if(containerType==="playlist"){
-							console.log("*********sonos  (paylist) imageUrl ="  + JsonObject.currentItem.track.imageUrl )
+							if (debugOutput) console.log("*********sonos  (paylist) imageUrl ="  + JsonObject.currentItem.track.imageUrl )
 							sonosModel.setProperty(i, "track", JsonObject.currentItem.track.name)
 							sonosModel.setProperty(i, "imageURL", JsonObject.currentItem.track.imageUrl)
 							sonosModel.setProperty(i, "artist", JsonObject.currentItem.track.artist.name)
 							
 						}else if(containerType==="track"){
-							console.log("*********sonos  (track) imageUrl ="  + JsonObject.currentItem.track.imageUrl )
+							if (debugOutput) console.log("*********sonos  (track) imageUrl ="  + JsonObject.currentItem.track.imageUrl )
 							sonosModel.setProperty(i, "track", JsonObject.currentItem.track.name)
 							sonosModel.setProperty(i, "imageURL", JsonObject.currentItem.track.imageUrl)
 							sonosModel.setProperty(i, "artist", JsonObject.currentItem.track.artist.name)
 							
 						}else{
-							console.log("*********sonos  (else) imageUrl ="  + JsonObject.currentItem.track.imageUrl )
+							if (debugOutput) console.log("*********sonos  (else) imageUrl ="  + JsonObject.currentItem.track.imageUrl )
 							sonosModel.setProperty(i, "track", JsonObject.currentItem.track.name)
 							sonosModel.setProperty(i, "imageURL", JsonObject.currentItem.track.imageUrl)
 							sonosModel.setProperty(i, "artist", JsonObject.currentItem.track.artist.name)
