@@ -31,7 +31,7 @@ Tile {
 		horizontalAlignment: Text.AlignHCenter
 		anchors {
 			top: parent.top
-			topMargin: 8
+			topMargin: isNxt ? 8 : 6
 			horizontalCenter: parent.horizontalCenter
 		}
 		width: isNxt ? 250 : 200
@@ -49,7 +49,7 @@ Tile {
 		anchors.top: zoneName.bottom
 		anchors.left: parent.left
 		anchors.leftMargin: 10
-		anchors.topMargin: 5
+		anchors.topMargin: isNxt ? 3: 2
 		
 		Image {
 			id: nowPlayingImage
@@ -76,7 +76,7 @@ Tile {
 		wrapMode: Text.WordWrap
 		anchors {
 			bottom: volumeDown.top
-			topMargin: 1
+			bottomMargin: 1
 			left: nowPlaying.left		
 		}
 		width: 100

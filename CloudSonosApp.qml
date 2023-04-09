@@ -85,6 +85,8 @@ App {
     property string  currentItemImageUrl: ""
     property string  currentItemTrackArtistName: ""
     property int     currentItemTrackDurationMillis:0
+	property bool 	 currentLineInAvailable:false
+
     property string  nextItemName: ""
     property string  nextItemTrackArtistName: ""
 	
@@ -112,7 +114,7 @@ App {
 		"token" : "",
 		"refreshToken" : "",
 		"playerIndex" : 0,
-		"playFootballScores" : ""
+		"playFootballScores" : "false"
 	}
 	
 	FileIO {
@@ -538,6 +540,7 @@ App {
                         	nextItemTrackArtistName=JsonObject.nextItem.track.artist.name
 							streamInfo = ""
                 	}
+					currentLineInAvailable =  sonosArray[playerIndex].group.lineInAvailable
            	} else {
 				if (debugOutput) console.log("*********sonos playbackMetadata error response:" + xhr.responseText)
 				if (xhr.responseText.indexOf("invalid_access_token")> 0){

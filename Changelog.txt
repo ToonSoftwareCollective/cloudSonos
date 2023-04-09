@@ -1,3 +1,6 @@
+1.0.3
+- error in layout toon 1 solved, lineIn hidden when speaker has no option for that, small cosmetic errors solved
+
 1.0.2
 - change in debugOutput
 

@@ -338,7 +338,7 @@ Screen {
 					model.clear()
 					numberofItems =  playlists.length
 					for (var i in playlists) {
-						if (debugOutput) console.log(playlists[i].name)
+						console.log(playlists[i].name)
 						app.playlist.push({"id": playlists[i].id, "fullname": playlists[i].name + "(" + playlists[i].trackCount + ")" , "name": playlists[i].name, "trackcount": playlists[i].trackCount});
 						listview1.model.append({name: app.playlist[i].fullname})
 					}
@@ -368,7 +368,7 @@ Screen {
 					numberofItems2=0
 					for (var i in tracks) {
 						if (tracks[i].name) {
-							if (debugOutput) console.log(tracks[i].name)
+							console.log(tracks[i].name)
 							listview2.model.append({name: tracks[i].artist + " - " + tracks[i].name})
 							numberofItems2++
 						}

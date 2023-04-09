@@ -22,14 +22,14 @@ Item {
 	property int gridWidth
 	property int gridHeight
 	
-	property int gridCellWidth:200
-	property int gridCellHeight : 50
+	property int gridCellWidth: isNxt ? 200:160
+	property int gridCellHeight : isNxt ? 50:40
 	
 	property int dotOffset: 2
-	property int radius: 8
-	property int spacing: 8
-	property int dotRadius: 5
-	property int smallDotRadius: 5
+	property int radius: isNxt ? 8:5
+	property int spacing: isNxt ? 8:5
+	property int dotRadius: isNxt ? 5: 3
+	property int smallDotRadius: isNxt ? 5: 3
 
 	property string fontFamily: qfont.regular.name
 	property string fontPixelSize: qfont.bodyText
@@ -38,8 +38,8 @@ Item {
 	property string smallDotColor: "grey"
 	property string smallDotShadowColor: "white"
 	property int shadowPixelSizeSmallDot: 1
-	property int radioWidth: 100
-	property int radioHeight:40
+	property int radioWidth: isNxt ? 100:80
+	property int radioHeight:isNxt ? 40:32
 	
 	property alias currentIndex: radioGroup.currentControlId
 
