@@ -385,12 +385,18 @@ Screen {
 			
 			cellWidth: isNxt ? 200:157
 			cellHeight: centerHorizontally ? isNxt ? 50:40 : isNxt ? 50:40
-			model: ListModel {
-				ListElement { text: "Favorieten"; actions: 1}
-				ListElement { text: "Audioberichten"; actions: 2}
-				ListElement { text: "Externe Ingang"; actions: 3 }
-			}
-
+			model: 	
+				ListModel { 
+					id: buttonModel
+					ListElement { text: "Favorieten"; actions: 1}
+					ListElement { text: "Audioberichten"; actions: 2}
+					Component.onCompleted: {
+						if (app.currentLineInAvailable) {
+							buttonModel.append({ text: "Externe Ingang", actions: 3 })
+						}
+					}
+				}
+					
 			delegate: 
 			SonosStandardButton {
 				text: model.text
@@ -407,7 +413,7 @@ Screen {
 							if(app.messageScreen) {app.messageScreen.show();}
 							break;
 						case 3:
-							app.postGroupCommand("playback/lineIn", JSON.stringify({}))
+							app.currentLineInAvailable ? app.postGroupCommand("playback/lineIn", JSON.stringify({})) : null
 							break;
 						default:
 							break;
@@ -555,14 +561,14 @@ Screen {
 						var containerType
 						var JsonObject= (JSON.parse(JsonString))
 						if(JsonObject.hasOwnProperty('container') & !JsonObject.hasOwnProperty('currentItem')){
-							if (debugOutput) console.log("*********sonos metaType = container")
+							console.log("*********sonos metaType = container")
 							containerType=JsonObject.container.type
 						}else if(JsonObject.hasOwnProperty('currentItem')){
-							if (debugOutput) console.log("*********sonos metaType = currentItem")
+							console.log("*********sonos metaType = currentItem")
 							containerType=JsonObject.currentItem.track.type
 						}else{
 						}
-						if (debugOutput) console.log("*********sonos containerType: " + containerType)
+						console.log("*********sonos containerType: " + containerType)
 						if(containerType=="station"){
 							sonosModel.setProperty(i, "track", JsonObject.container.name)
 							sonosModel.setProperty(i, "artist", "Station")
@@ -572,25 +578,25 @@ Screen {
 								}
 							}
 						}else if(typeof containerType==="undefined"){
-							if (debugOutput) console.log("*********sonos  (undefined) imageUrl ="  + " geen" )
+							console.log("*********sonos  (undefined) imageUrl ="  + " geen" )
 							sonosModel.setProperty(i, "track", "Geen bron")
 							sonosModel.setProperty(i, "imageURL", "")
 							sonosModel.setProperty(i, "artist", "")
 							
 						}else if(containerType==="playlist"){
-							if (debugOutput) console.log("*********sonos  (paylist) imageUrl ="  + JsonObject.currentItem.track.imageUrl )
+							console.log("*********sonos  (paylist) imageUrl ="  + JsonObject.currentItem.track.imageUrl )
 							sonosModel.setProperty(i, "track", JsonObject.currentItem.track.name)
 							sonosModel.setProperty(i, "imageURL", JsonObject.currentItem.track.imageUrl)
 							sonosModel.setProperty(i, "artist", JsonObject.currentItem.track.artist.name)
 							
 						}else if(containerType==="track"){
-							if (debugOutput) console.log("*********sonos  (track) imageUrl ="  + JsonObject.currentItem.track.imageUrl )
+							console.log("*********sonos  (track) imageUrl ="  + JsonObject.currentItem.track.imageUrl )
 							sonosModel.setProperty(i, "track", JsonObject.currentItem.track.name)
 							sonosModel.setProperty(i, "imageURL", JsonObject.currentItem.track.imageUrl)
 							sonosModel.setProperty(i, "artist", JsonObject.currentItem.track.artist.name)
 							
 						}else{
-							if (debugOutput) console.log("*********sonos  (else) imageUrl ="  + JsonObject.currentItem.track.imageUrl )
+							console.log("*********sonos  (else) imageUrl ="  + JsonObject.currentItem.track.imageUrl )
 							sonosModel.setProperty(i, "track", JsonObject.currentItem.track.name)
 							sonosModel.setProperty(i, "imageURL", JsonObject.currentItem.track.imageUrl)
 							sonosModel.setProperty(i, "artist", JsonObject.currentItem.track.artist.name)

@@ -58,41 +58,41 @@ Screen {
 		
 		switch (radioButtonList1.currentIndex) {
             case 1:
-                if (debugOutput) console.log("Option Ruben");
+                console.log("Option Ruben");
 				voice="Ruben"
                 break;
             case 2:
-                if (debugOutput) console.log("Option Lotte");
+                console.log("Option Lotte");
 				voice="Lotte"
                 break;
             default:
-                if (debugOutput) console.log("Invalid");
+                console.log("Invalid");
                 break;
         }
 		
 		switch (radioButtonList2.currentIndex) {
             case 1:
-                if (debugOutput) console.log("Option Fluister");
+                console.log("Option Fluister");
 				playMessage = "<amazon:effect name=\"whispered\">" + playMessage + "</amazon:effect>"
                 break;
             case 2:
-                if (debugOutput) console.log("Option langzaam");
+                console.log("Option langzaam");
 				playMessage = "<prosody rate=\"slow\">" + playMessage + "</prosody>"
                 break;
 			case 3:
-                if (debugOutput) console.log("Option snel");
+                console.log("Option snel");
 				playMessage = "<prosody rate=\"fast\">" + playMessage + "</prosody>"
                 break;
 			case 4:
-                if (debugOutput) console.log("Option laag");
+                console.log("Option laag");
 				playMessage = "<prosody pitch=\"-20%\">" + playMessage + "</prosody>"
                 break;
 			case 5:
-                if (debugOutput) console.log("Option hoog");
+                console.log("Option hoog");
 				playMessage = "<prosody pitch=\"high\">" + playMessage + "</prosody>"
                 break;
             default:
-                if (debugOutput) console.log("Invalid");
+                console.log("Invalid");
                 break;
         }
 
@@ -130,7 +130,7 @@ Screen {
 		model2.clear()
 		numberofItems2 =  app.messageTextArray.length
 		for (var i in app.messageTextArray) {
-			if (debugOutput) console.log(app.messageTextArray[i])
+			console.log(app.messageTextArray[i])
 			listview2.model.append({name: app.messageTextArray[i]})
 		}
 	}
@@ -310,10 +310,10 @@ Screen {
 	SonosRadioButtonList {
 		id: radioButtonList1
 		width: listviewContainer1.width
-		height: 60
+		height: isNxt ? 60: 48
 		gridCellWidth: isNxt ? 200:157
 		gridCellHeight: isNxt ? 32:25
-		radioWidth: isNxt ? 180:64
+		radioWidth: isNxt ? 180:164
 		radioHeight:isNxt ? 29:23
 		backgroundColor:colors.canvas
 		
@@ -347,10 +347,10 @@ Screen {
 	SonosRadioButtonList {
 		id: radioButtonList2
 		width: listviewContainer1.width
-		height: 90
+		height: isNxt ? 90:72
 		gridCellWidth: isNxt ? 200:157
 		gridCellHeight: isNxt ? 32:25
-		radioWidth: isNxt ? 180:64
+		radioWidth: isNxt ? 180:164
 		radioHeight:isNxt ? 29:23
 		backgroundColor:colors.canvas
 		
@@ -362,7 +362,7 @@ Screen {
 		title: qsTr("Local access")
 
 		Component.onCompleted: {
-			addItem("Standaard)");
+			addItem("Standaard");
 			addItem("Fluister");
 			addItem("Langzaam");
 			addItem("Snel");
