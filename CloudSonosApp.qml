@@ -42,6 +42,8 @@ App {
     property bool 	playButtonVisible : false
     property bool 	pauseButtonVisible : false
 	property bool 	showSlider: true
+	property bool 	visibleInDimState: false
+	
 	property bool 	tokenOK: true
 	property bool 	lineInAvailable:false
 	property bool 	savedFromConfigScreen:false
@@ -114,7 +116,8 @@ App {
 		"token" : "",
 		"refreshToken" : "",
 		"playerIndex" : 0,
-		"playFootballScores" : "false"
+		"playFootballScores" : "false",
+		"visibleInDimState" : "false"
 	}
 	
 	FileIO {
@@ -173,6 +176,7 @@ App {
 			if (settings['refreshToken']) refreshToken = (settings['refreshToken']);
 			if (settings['playerIndex']) playerIndex = (settings['playerIndex']);
 			if (settings['playFootballScores']) playFootballScores = (settings['playFootballScores'] == "true");
+			if (settings['visibleInDimState']) visibleInDimState = (settings['visibleInDimState'] == "true");
 		} catch(e) {
 		}
 		sleep(1000);
@@ -216,6 +220,13 @@ App {
 			tmpdebugOutput = "false";
 		}
 
+		var tmpVisible = "";
+		if (visibleInDimState) {
+			tmpVisible = "true";
+		} else {
+			tmpVisible = "false";
+		}
+
 		settings["showSonosIcon"] = tmpTrayIcon;
 		settings["sonosWarningShown"] = tmpWarning;
 		settings["debugOutput"] = tmpdebugOutput;
@@ -229,6 +240,7 @@ App {
 		settings["messageSonosName"] = messageSonosName;
 		settings["messageVolume"] = messageVolume;
 		settings["playFootballScores"] = tmpVoetbal;
+		settings["visibleInDimState"] = tmpVisible;
 		settings["playerIndex"] = playerIndex;
 		
 		sonosSettingsFile.write(JSON.stringify(settings));

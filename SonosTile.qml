@@ -50,20 +50,22 @@ Tile {
 		anchors.left: parent.left
 		anchors.leftMargin: 10
 		anchors.topMargin: isNxt ? 3: 2
+		color: "white"
 		
 		Image {
 			id: nowPlayingImage
 			source: app.currentItemImageUrl
-			width: isNxt ? 80 : 64
-			height: isNxt ? 80 : 64
-			anchors.top: parent.top
-			anchors.left: parent.left
-			anchors.leftMargin: 3
-			anchors.topMargin: 3			
+			fillMode: Image.PreserveAspectFit
+			height: parent.heigth - 2
+			width: parent.width - 2
+			anchors {
+				top: parent.top
+				horizontalCenter: parent.horizontalCenter
+				topMargin: 1
+			}
 		}
-		visible: !dimState && (app.currentItemImageUrl.length > 5) & !showNext
+		visible:  (app.currentItemImageUrl.length > 5) & !showNext & (!dimState || app.visibleInDimState)
 	}
-
 	
 	//shows you the now playing artist / number.
 	Text {
@@ -74,64 +76,74 @@ Tile {
 		font.bold: true
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 		wrapMode: Text.WordWrap
+		horizontalAlignment: (dimState  &  !app.visibleInDimState) ? Text.AlignHCenter : undefined 
 		anchors {
-			bottom: volumeDown.top
-			bottomMargin: 1
-			left: nowPlaying.left		
+			bottom: (dimState & !app.visibleInDimState) ? titleText.bottom : volumeDown.top
+			topMargin: (dimState & !app.visibleInDimState) ? 5 : undefined
+			bottomMargin: (dimState & !app.visibleInDimState) ? undefined: 1
+			left: (dimState & !app.visibleInDimState) ? undefined : nowPlaying.left
+			horizontalCenter: (dimState  &  !app.visibleInDimState) ? parent.horizontalCenter : undefined
 		}
 		width: 100
-		visible: app.showSlider & !dimState & !showNext
+		visible: app.showSlider & !showNext & !pauseText.visible
 	}
 	
 	//shows you the now playing artist / number.
 	Text {
 		id: itemText
 		text: app.currentItemTrackArtistName
+		width: (!dimState || app.visibleInDimState) ? isNxt ? 157 : 125 : parent.width -6
 		font.pixelSize: isNxt ? 17 : 13
 		font.family: qfont.regular.name
 		font.bold: true
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 		wrapMode: Text.WordWrap
+		horizontalAlignment: (dimState  &  !app.visibleInDimState) ? Text.AlignHCenter : undefined 
 		anchors {
 			top: nowPlaying.top
-			left: nowPlaying.right
-			leftMargin: isNxt ? 5 : 4
+			left: (dimState  &  !app.visibleInDimState) ? undefined : nowPlaying.right
+			leftMargin: (dimState  &  !app.visibleInDimState) ?  undefined : isNxt ? 5 : 4
+			horizontalCenter: (dimState  &  !app.visibleInDimState) ? parent.horizontalCenter : undefined
 		}
-		width: isNxt ? 157 : 125
+		
 		visible: !showNext
 	}
 	
 	Text {
 		id: titleText
 		text: app.currentItemName
+		width: (!dimState || app.visibleInDimState) ? isNxt ? 157 : 125 : parent.width -6
 		font.pixelSize: isNxt ? 17 : 13
 		font.family: qfont.regular.name
 		font.bold: false
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 		wrapMode: Text.WordWrap
+		horizontalAlignment: (dimState  &  !app.visibleInDimState) ? Text.AlignHCenter : undefined 
 		anchors {
 			top: itemText.bottom
 			topMargin: 2
-			left: itemText.left
+			left: (dimState  &  !app.visibleInDimState) ? undefined : itemText.left
+			horizontalCenter: (dimState  &  !app.visibleInDimState) ? parent.horizontalCenter : undefined
 		}
-		width: isNxt ? 157 : 125
 		visible: !showNext
 	}
 	
 	Text {
 		id: streamInfoTxt
 		text: app.streamInfo
+		width: (!dimState || app.visibleInDimState) ? isNxt ? 157 : 125 : parent.width -6
 		font.pixelSize: isNxt ? 12 : 9
 		font.family: qfont.bold.name
 		font.bold: false
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 		wrapMode: Text.WordWrap
+		horizontalAlignment: (dimState  &  !app.visibleInDimState) ? Text.AlignHCenter : undefined 
 		anchors {
 			top: titleText.bottom
 			topMargin: 3
-			left: itemText.left
+			left: (dimState & !app.visibleInDimState) ? undefined : itemText.left
+			horizontalCenter: (dimState  &  !app.visibleInDimState) ? parent.horizontalCenter : undefined
 		}
-		width: isNxt ? 157 : 125
 		visible: !(streamInfo== "") & !showNext
 	}
 
@@ -159,7 +171,7 @@ Tile {
 		text: app.nextItemTrackArtistName
 		font.pixelSize: isNxt ? 17 : 13
 		font.family: qfont.regular.name
-		width: isNxt ? 250 : 200
+		width: (!dimState || app.visibleInDimState) ? isNxt ? 250 : 200 : parent.width -6
 		font.bold: true
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 		wrapMode: Text.WordWrap
@@ -176,7 +188,7 @@ Tile {
 		text: app.nextItemName
 		font.pixelSize: isNxt ? 17 : 13
 		font.family: qfont.regular.name
-		width: isNxt ? 250 : 200
+		width: (!dimState || app.visibleInDimState) ? isNxt ? 250 : 200 : parent.width -6
 		font.bold: false
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 		wrapMode: Text.WordWrap
@@ -198,10 +210,12 @@ Tile {
 		font.bold: false
 		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 		wrapMode: Text.WordWrap
+		horizontalAlignment: (dimState  &  !app.visibleInDimState) ? Text.AlignHCenter : undefined 
 		anchors {
 			top: titleText.bottom
 			topMargin: 5
-			left: itemText.left
+			left: (dimState & !app.visibleInDimState) ? undefined : itemText.left
+			horizontalCenter: (dimState  &  !app.visibleInDimState) ? parent.horizontalCenter : undefined
 		}
 		width: isNxt ? 157 : 125
 		visible: dimState && app.playButtonVisible & !showNext
@@ -325,7 +339,7 @@ Tile {
 			rightMargin: isNxt ? 5 : 4
 			topMargin:isNxt ? 5 : 4
 		}
-		visible: app.showSlider
+		visible: !dimState && app.showSlider 
 	}
 
 
