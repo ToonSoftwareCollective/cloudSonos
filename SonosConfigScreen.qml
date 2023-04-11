@@ -7,6 +7,7 @@ Screen {
 	property bool debugOutput : app.debugOutput
 	screenTitle: qsTr("Sonos Instellingen")
 	property bool    	tmpShowSonosIcon: app.showSonosIcon;
+	property bool    	tmpVisible: app.visibleInDimState;
 	property bool    	tmpPlayFootballScores : app.playFootballScores;
 	property string    	tmpUserName: app.userName;
 	property string		tmpPassWord: app.passWord;
@@ -20,6 +21,7 @@ Screen {
 		if (debugOutput) console.log("*********sonos configScreen loaded")
 		showSonosIconToggle.isSwitchedOn = tmpShowSonosIcon;
 		voetbalToggle.isSwitchedOn = tmpPlayFootballScores;
+		visibleToggle.isSwitchedOn = tmpVisible;
 		addCustomTopRightButton("Opslaan en herstarten");
 		userNameLabel.inputText = tmpUserName;
 		passWordLAbel.inputText = tmpPassWord;
@@ -52,6 +54,7 @@ Screen {
 	function saveSettings(){
 		app.sonosWarningShown = true
 		app.showSonosIcon =tmpShowSonosIcon
+		app.visibleInDimState =tmpVisible
 		app.playFootballScores = tmpPlayFootballScores 
 		app.userName = tmpUserName
 		app.passWord = tmpPassWord
@@ -191,12 +194,44 @@ Screen {
 		}
 	}
 	
-
+	Text {
+		id: visibleText
+		anchors {
+			left: titleText.left
+			top: systrayText.bottom
+			topMargin: isNxt ? 6 : 5
+		}
+		font {
+			pixelSize: qfont.bodyText
+			family: qfont.regular.name
+		}
+		wrapMode: Text.WordWrap
+		text: "Afbeelding zichtbaar in gedimde modus?"
+	}
+	
+	OnOffToggle {
+		id: visibleToggle
+		height: 36
+		anchors {
+			left: visibleText.right
+			top: visibleText.top
+			leftMargin: 15
+		}
+		leftIsSwitchedOn: false
+		onSelectedChangedByUser: {
+			if (isSwitchedOn) {
+				tmpVisible=true
+			} else {
+				tmpVisible=false
+			}
+		}
+	}
+	
 	Text {
 		id: voetbalText
 		anchors {
 			left: titleText.left
-			top: systrayText.bottom
+			top: visibleText.bottom
 			topMargin: isNxt ? 6 : 5
 		}
 		font {

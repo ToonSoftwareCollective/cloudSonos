@@ -13,11 +13,6 @@ import BasicUIControls 1.0;
 Item {
 	id: sonosRadioButtonList
 
-	implicitWidth: Math.max(listHeader.implicitWidth, listView.implicitWidth)
-	implicitHeight: (listHeader.text ? listHeader.height + listView.anchors.topMargin : 0) +
-					count * (count ? listView.contentItem.children[0].height : 0) +
-					(count ? (count - 1) * listView.spacing : 0)
-
 	property string title
 	property int gridWidth
 	property int gridHeight

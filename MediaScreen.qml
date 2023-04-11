@@ -165,19 +165,20 @@ Screen {
 				topMargin: isNxt ? 30 : 24
 			}
 			
+		
 			Image {
 				id: nowPlayingImage
 				source: app.currentItemImageUrl
 				fillMode: Image.PreserveAspectFit
-				height: isNxt ? 250 : 200
+				height: parent.heigth - 6
+				width: parent.width - 6
 				anchors {
 					top: parent.top
-					leftMargin: 3
+					horizontalCenter: parent.horizontalCenter
 					topMargin: 3
 				}
 			}
 			visible: (app.currentItemImageUrl.length > 5)
-
 		}
 		
 		Rectangle{
@@ -481,7 +482,7 @@ Screen {
 					text: model.name
 					font.pixelSize:  isNxt ? 16 : 12
 					font.family: qfont.bold.name
-					width: isNxt ? 180: 144
+					width: parent.width - 2
 					wrapMode: Text.WordWrap
 					horizontalAlignment: Text.AlignHCenter
 					color: colors.tileTextColor
@@ -494,7 +495,7 @@ Screen {
 				
 				Rectangle{
 					id: textBackground2
-					width: parent.width
+					width: parent.width - 2
 					height: trackName.implicitHeight + artistName.implicitHeight
 					color: "white"
 					opacity: 0.8
@@ -508,7 +509,7 @@ Screen {
 					text: model.track
 					font.pixelSize:  isNxt ? 16 : 12
 					font.family: qfont.bold.name
-					width: isNxt ? 180: 144
+					width: parent.width - 2
 					wrapMode: Text.WordWrap
 					color: "red"
 					horizontalAlignment: Text.AlignHCenter
@@ -523,7 +524,7 @@ Screen {
 					text: model.artist
 					font.pixelSize:  isNxt ? 16 : 12
 					font.family: qfont.bold.name
-					width: isNxt ? 180: 144
+					width: parent.width - 2
 					wrapMode: Text.WordWrap
 					color: colors.tileTextColor
 					horizontalAlignment: Text.AlignHCenter
