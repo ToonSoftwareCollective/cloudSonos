@@ -4,7 +4,7 @@ import qb.components 1.0
 
 Screen {
 	id: mediaScreen
-	screenTitle: qsTr("Sonos")
+	screenTitle: app.groupName
 	
 	property bool debugOutput : app.debugOutput
 	
@@ -24,6 +24,7 @@ Screen {
 	
 	onCustomButtonClicked:{
 		if (app.sonosConfigScreen) {
+			 app.needReboot = false
 			 app.sonosConfigScreen.show();
 		}
 	}
@@ -53,7 +54,7 @@ Screen {
 
 	Rectangle {
 		id:frame1
-		width: parent.width/3
+		width: isNxt? 1024/3 : 800/3
 		height: parent.height
 		color: colors.canvas
 		
@@ -65,10 +66,26 @@ Screen {
 			horizontalCenter: centerHorizontally ? parent.horizontalCenter : undefined
 		}
 		
+		Text {
+			id: zoneName
+			text: app.groupName
+			font.pixelSize: isNxt ? 20 : 16
+			font.family: qfont.regular.name
+			font.bold: true
+			wrapMode: Text.WordWrap
+			horizontalAlignment: Text.AlignHCenter
+			anchors {
+				top: parent.top
+				topMargin: isNxt ? 8 : 6
+				horizontalCenter: parent.horizontalCenter
+			}
+			width: isNxt ? 250 : 200
+		}
+		
 		Image {
 			id: positionIndicatorBar
 			source: "drawables/volumeBarTile.png"
-			width: parent.width
+			width: frame1.width
 			height: isNxt ? 30 : 24
 			anchors {
 				top: parent.top
@@ -197,7 +214,7 @@ Screen {
 		//This is the text which is showing you the now playing artist and number
 		Text {
 			id: itemArtist
-			text: app.currentItemTrackArtistName
+			text: app.currentItemTrackArtistNameShort
 			font.pixelSize: isNxt ? 30 : 24
 			font.family: qfont.bold.name
 			color: colors.tileTextColor
@@ -213,7 +230,7 @@ Screen {
 		
 		Text {
 			id: itemText
-			text: app.currentItemName
+			text: app.currentItemNameShort
 			font.pixelSize: isNxt ? 35 : 28
 			font.family: qfont.bold.name
 			color: "red"
@@ -246,8 +263,7 @@ Screen {
 			id: pauseButton
 			color: colors.background
 			anchors {
-				right: parent.horizontalCenter
-				rightMargin: isNxt ? 5 : 4
+				horizontalCenter: parent.horizontalCenter
 				bottom: parent.bottom
 				bottomMargin: isNxt ? 8 : 6
 			}
@@ -282,12 +298,13 @@ Screen {
 			id: prevButton
 			anchors {
 				right: pauseButton.left
-				rightMargin: isNxt ? 10 : 7
+				rightMargin: isNxt ? 19 : 15
 				top: pauseButton.top
 			}
 			iconSource: "qrc:/tsc/left.png"
 			onClicked: {
 				app.setSimpleGroupCommand("playback/skipToPreviousTrack");
+				app.getMetaData();
 			}
 		}
 		
@@ -295,7 +312,7 @@ Screen {
 			id: volumeDown
 			anchors {
 				right: prevButton.left
-				rightMargin: isNxt ? 10 : 7
+				rightMargin: isNxt ? 19 : 15
 				top: pauseButton.top
 			}
 			iconSource: "qrc:/tsc/volume_down.png"
@@ -305,46 +322,16 @@ Screen {
 		}
 		
 		IconButton {
-			id: shuffleOnButton
-			anchors {
-				left: pauseButton.right
-				leftMargin: isNxt ? 10 : 7
-				top: pauseButton.top
-			}
-			iconSource: "qrc:/tsc/shuffle_on.png"
-			onClicked: {
-				app.shuffle = false
-				app.setPlayModes();
-			}
-			visible :  app.shuffle
-		}
-		
-		
-		IconButton {
-			id: shuffleButton
-			anchors {
-				left: shuffleOnButton.left
-				top: pauseButton.top
-			}
-
-			iconSource: "qrc:/tsc/shuffle.png"
-			onClicked: {
-				app.shuffle = true
-				app.setPlayModes();
-			}
-			visible :  !app.shuffle
-		}
-		
-		IconButton {
 			id: nextButton
 			anchors {
-				left: shuffleButton.right
-				leftMargin: isNxt ? 10 : 7
+				left: pauseButton.right
+				leftMargin: isNxt ? 19 : 15
 				top: pauseButton.top
 			}
 			iconSource: "qrc:/tsc/right.png"
 			onClicked: {
 				app.setSimpleGroupCommand("/playback/skipToNextTrack");
+				app.getMetaData();
 			}
 		}
 
@@ -352,7 +339,7 @@ Screen {
 			id: volumeUp
 			anchors {
 				left: nextButton.right
-				leftMargin: isNxt ? 10 : 7
+				leftMargin: isNxt ? 19 : 15
 				top: pauseButton.top
 			}
 			iconSource: "qrc:/tsc/volume_up.png"
@@ -361,6 +348,8 @@ Screen {
 			}
 		}
 	}
+	
+			
 
 	Rectangle {
 		id: frame2
@@ -458,6 +447,7 @@ Screen {
 						if (debugOutput) console.log("*********sonos mousearea clicked:" + index);
 						app.playerIndex = index;
 						app.groupName = model.name;
+						setScreenTitle(model.name,"")
 						app.saveSettings()
 						app.getMetaData()
 						app.getPlaybackStatus()
@@ -539,7 +529,62 @@ Screen {
 		}
 		visible: !centerHorizontally
 	}
+	
 
+
+	SonosStandardButton {
+		id: repeatAllButton
+		text: "herhaal"
+		width: isNxt ? 120: 90
+		height: isNxt ? 44:35
+		fontColorUp: app.repeat ?  "cornflowerblue" : "darkslategray" 
+		fontPixelSize: isNxt ? 20 : 16
+		y: pauseButton.y
+		anchors {
+			horizontalCenter: frame3.horizontalCenter
+		}
+		onClicked: {
+			app.repeat = !app.repeat
+			app.setPlayModes();
+		}
+	}
+
+
+	SonosStandardButton {
+		id: shuffleButton2
+		text: "shuffle"
+		width: isNxt ? 120: 90
+		height: isNxt ? 44:35
+		fontColorUp: app.shuffle ?  "cornflowerblue" : "darkslategray" 
+		fontPixelSize: isNxt ? 20 : 16
+		y: pauseButton.y
+		anchors {
+				right: repeatAllButton.left
+				rightMargin: isNxt ? 12 : 9
+			}
+		onClicked: {
+			app.shuffle = !app.shuffle
+			app.setPlayModes();
+		}
+	}
+
+	SonosStandardButton {
+		id: crossButton
+		text: "cross"
+		width: isNxt ? 120: 90
+		height: isNxt ? 44:35
+		fontColorUp: app.crossfade ?  "cornflowerblue" : "darkslategray" 
+		fontPixelSize: isNxt ? 20 : 16
+		y: pauseButton.y
+		anchors {
+				left: repeatAllButton.right
+				leftMargin: isNxt ? 20 : 16
+			}
+		onClicked: {
+			app.crossfade = !app.crossfade
+			app.setPlayModes();
+		}
+	}
 
 	function getAllFromMetaData(){
 		if (debugOutput) console.log("*********sonos getAllFromMetaData filling the grid")
@@ -562,14 +607,14 @@ Screen {
 						var containerType
 						var JsonObject= (JSON.parse(JsonString))
 						if(JsonObject.hasOwnProperty('container') & !JsonObject.hasOwnProperty('currentItem')){
-							console.log("*********sonos metaType = container")
+							if (debugOutput) console.log("*********sonos metaType = container")
 							containerType=JsonObject.container.type
 						}else if(JsonObject.hasOwnProperty('currentItem')){
-							console.log("*********sonos metaType = currentItem")
+							if (debugOutput) console.log("*********sonos metaType = currentItem")
 							containerType=JsonObject.currentItem.track.type
 						}else{
 						}
-						console.log("*********sonos containerType: " + containerType)
+						if (debugOutput) console.log("*********sonos containerType: " + containerType)
 						if(containerType=="station"){
 							sonosModel.setProperty(i, "track", JsonObject.container.name)
 							sonosModel.setProperty(i, "artist", "Station")
@@ -579,25 +624,25 @@ Screen {
 								}
 							}
 						}else if(typeof containerType==="undefined"){
-							console.log("*********sonos  (undefined) imageUrl ="  + " geen" )
+							if (debugOutput) console.log("*********sonos  (undefined) imageUrl ="  + " geen" )
 							sonosModel.setProperty(i, "track", "Geen bron")
 							sonosModel.setProperty(i, "imageURL", "")
 							sonosModel.setProperty(i, "artist", "")
 							
 						}else if(containerType==="playlist"){
-							console.log("*********sonos  (paylist) imageUrl ="  + JsonObject.currentItem.track.imageUrl )
+							if (debugOutput) console.log("*********sonos  (paylist) imageUrl ="  + JsonObject.currentItem.track.imageUrl )
 							sonosModel.setProperty(i, "track", JsonObject.currentItem.track.name)
 							sonosModel.setProperty(i, "imageURL", JsonObject.currentItem.track.imageUrl)
 							sonosModel.setProperty(i, "artist", JsonObject.currentItem.track.artist.name)
 							
 						}else if(containerType==="track"){
-							console.log("*********sonos  (track) imageUrl ="  + JsonObject.currentItem.track.imageUrl )
+							if (debugOutput) console.log("*********sonos  (track) imageUrl ="  + JsonObject.currentItem.track.imageUrl )
 							sonosModel.setProperty(i, "track", JsonObject.currentItem.track.name)
 							sonosModel.setProperty(i, "imageURL", JsonObject.currentItem.track.imageUrl)
 							sonosModel.setProperty(i, "artist", JsonObject.currentItem.track.artist.name)
 							
 						}else{
-							console.log("*********sonos  (else) imageUrl ="  + JsonObject.currentItem.track.imageUrl )
+							if (debugOutput) console.log("*********sonos  (else) imageUrl ="  + JsonObject.currentItem.track.imageUrl )
 							sonosModel.setProperty(i, "track", JsonObject.currentItem.track.name)
 							sonosModel.setProperty(i, "imageURL", JsonObject.currentItem.track.imageUrl)
 							sonosModel.setProperty(i, "artist", JsonObject.currentItem.track.artist.name)

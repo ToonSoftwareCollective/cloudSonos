@@ -1,1 +1,2 @@
 icon set:  https://www.iconfinder.com/iconsets/doodle-audio-video-game
+color changed for on:    rgb(0, 0, 0) 10 % to rgb(22, 239, 244) https://onlinepngtools.com/change-png-color

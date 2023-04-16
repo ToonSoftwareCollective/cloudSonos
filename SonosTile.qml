@@ -68,30 +68,10 @@ Tile {
 	}
 	
 	//shows you the now playing artist / number.
-	Text {
-		id: itemPosition
-		text: new Date(app.positionMillis).toISOString().substr(14, 5) + " (" + new Date(app.currentItemTrackDurationMillis).toISOString().substr(14, 5) + ")"
-		font.pixelSize: isNxt ? 15 : 12
-		font.family: qfont.regular.name
-		font.bold: true
-		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
-		wrapMode: Text.WordWrap
-		horizontalAlignment: (dimState  &  !app.visibleInDimState) ? Text.AlignHCenter : undefined 
-		anchors {
-			bottom: (dimState & !app.visibleInDimState) ? titleText.bottom : volumeDown.top
-			topMargin: (dimState & !app.visibleInDimState) ? 5 : undefined
-			bottomMargin: (dimState & !app.visibleInDimState) ? undefined: 1
-			left: (dimState & !app.visibleInDimState) ? undefined : nowPlaying.left
-			horizontalCenter: (dimState  &  !app.visibleInDimState) ? parent.horizontalCenter : undefined
-		}
-		width: 100
-		visible: app.showSlider & !showNext & !pauseText.visible
-	}
-	
-	//shows you the now playing artist / number.
+
 	Text {
 		id: itemText
-		text: app.currentItemTrackArtistName
+		text: app.currentItemTrackArtistNameShort 
 		width: (!dimState || app.visibleInDimState) ? isNxt ? 157 : 125 : parent.width -6
 		font.pixelSize: isNxt ? 17 : 13
 		font.family: qfont.regular.name
@@ -111,7 +91,7 @@ Tile {
 	
 	Text {
 		id: titleText
-		text: app.currentItemName
+		text: app.currentItemNameShort 
 		width: (!dimState || app.visibleInDimState) ? isNxt ? 157 : 125 : parent.width -6
 		font.pixelSize: isNxt ? 17 : 13
 		font.family: qfont.regular.name
@@ -144,7 +124,42 @@ Tile {
 			left: (dimState & !app.visibleInDimState) ? undefined : itemText.left
 			horizontalCenter: (dimState  &  !app.visibleInDimState) ? parent.horizontalCenter : undefined
 		}
-		visible: !(streamInfo== "") & !showNext
+		visible: !(app.streamInfo== "") & !showNext
+	}
+	
+	Text {
+		id: itemPosition
+		text: new Date(app.positionMillis).toISOString().substr(14, 5) + " (" + new Date(app.currentItemTrackDurationMillis).toISOString().substr(14, 5) + ")"
+		font.pixelSize: isNxt ? 15 : 12
+		font.family: qfont.regular.name
+		font.bold: true
+		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
+		wrapMode: Text.WordWrap
+		anchors {
+			left: nowPlaying.left
+			bottom: volumeDown.top
+			bottomMargin: 1
+		}
+		width: 100
+		visible: app.showSlider & !showNext & !pauseText.visible & !itemPositionDimmed.visible
+	} 
+	
+		Text {
+		id: itemPositionDimmed
+		text: new Date(app.positionMillis).toISOString().substr(14, 5) + " (" + new Date(app.currentItemTrackDurationMillis).toISOString().substr(14, 5) + ")"
+		font.pixelSize: isNxt ? 15 : 12
+		font.family: qfont.regular.name
+		font.bold: true
+		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
+		wrapMode: Text.WordWrap
+		horizontalAlignment: Text.AlignHCenter
+		anchors {
+			topMargin:  isNxt ? 5 : 4 
+			horizontalCenter:  parent.horizontalCenter
+			top:  titleText.bottom
+		}
+		width: 100
+		visible: app.showSlider & !showNext & !pauseText.visible & dimState & !app.visibleInDimState
 	}
 
 
@@ -168,7 +183,7 @@ Tile {
 	
 	Text {
 		id: itemTextNext
-		text: app.nextItemTrackArtistName
+		text: app.nextItemTrackArtistNameShort 
 		font.pixelSize: isNxt ? 17 : 13
 		font.family: qfont.regular.name
 		width: (!dimState || app.visibleInDimState) ? isNxt ? 250 : 200 : parent.width -6
@@ -185,7 +200,7 @@ Tile {
 	
 	Text {
 		id: titleTextNext
-		text: app.nextItemName
+		text: app.nextItemNameShort 
 		font.pixelSize: isNxt ? 17 : 13
 		font.family: qfont.regular.name
 		width: (!dimState || app.visibleInDimState) ? isNxt ? 250 : 200 : parent.width -6
@@ -253,6 +268,7 @@ Tile {
 		iconSource: "qrc:/tsc/left.png"
 		onClicked: {
 			app.setSimpleGroupCommand("playback/skipToPreviousTrack");
+			app.getMetaData();
 		}
 		visible: !dimState && app.showSlider
 	}
@@ -300,8 +316,8 @@ Tile {
 
 		iconSource: "qrc:/tsc/right.png"
 		onClicked: {
-			console.log("next");
 			app.setSimpleGroupCommand("/playback/skipToNextTrack");
+			app.getMetaData();
 		}
 		visible: !dimState && app.showSlider
 	}	
