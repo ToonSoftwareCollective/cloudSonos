@@ -10,7 +10,8 @@ Screen {
 	property bool    	tmpVisible: app.visibleInDimState;
 	property bool    	tmpPlayFootballScores : app.playFootballScores;
 	property string    	tmpUserName: app.userName;
-	property string		tmpPassWord: app.passWord;
+	property string		tmpPassWord: "xxx";
+	property string		tmpSavePassWord: app.passWord
 	property int		tmpMessageVolume: app.messageVolume;
 	property string		tmpSonosNameVoetbalApp: app.sonosNameVoetbalApp;
 	property int 		numberofItems:0
@@ -58,7 +59,7 @@ Screen {
 		app.visibleInDimState =tmpVisible
 		app.playFootballScores = tmpPlayFootballScores 
 		app.userName = tmpUserName
-		app.passWord = tmpPassWord
+		app.passWord = tmpSavePassWord
 		app.messageVolume=tmpMessageVolume;
 		app.sonosNameVoetbalApp = tmpSonosNameVoetbalApp
 		app.savedFromConfigScreen = true
@@ -92,7 +93,7 @@ Screen {
 	
 	function savePassWord(text) {
 		if (text) {
-			tmpPassWord = text;
+			tmpSavePassWord = text;
 			app.needReboot = true
 		}
 	}

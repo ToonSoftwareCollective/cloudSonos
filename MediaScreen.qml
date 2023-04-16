@@ -531,60 +531,170 @@ Screen {
 	}
 	
 
-
-	SonosStandardButton {
-		id: repeatAllButton
-		text: "herhaal"
-		width: isNxt ? 120: 90
+	Rectangle {
+	    id: crossButtonOnButton
+		width: isNxt ? 44:35
 		height: isNxt ? 44:35
-		fontColorUp: app.repeat ?  "cornflowerblue" : "darkslategray" 
-		fontPixelSize: isNxt ? 20 : 16
+		color: colors.btnUp
+		radius: designElements.radius
 		y: pauseButton.y
 		anchors {
-			horizontalCenter: frame3.horizontalCenter
+			right: parent.right
+			rightMargin : isNxt ? 20:16
 		}
-		onClicked: {
-			app.repeat = !app.repeat
-			app.setPlayModes();
+		Image {
+			source: "drawables/crossfade_on.png"
+			width: isNxt ? 26:24
+			height: isNxt ? 26:24
+			anchors.centerIn: parent
 		}
-	}
-
-
-	SonosStandardButton {
-		id: shuffleButton2
-		text: "shuffle"
-		width: isNxt ? 120: 90
-		height: isNxt ? 44:35
-		fontColorUp: app.shuffle ?  "cornflowerblue" : "darkslategray" 
-		fontPixelSize: isNxt ? 20 : 16
-		y: pauseButton.y
-		anchors {
-				right: repeatAllButton.left
-				rightMargin: isNxt ? 12 : 9
+		MouseArea {
+			anchors.fill: parent
+			onClicked: {
+				app.crossfade = false
+				app.setPlayModes();
 			}
-		onClicked: {
-			app.shuffle = !app.shuffle
-			app.setPlayModes();
 		}
+		visible: app.crossfade
 	}
-
-	SonosStandardButton {
-		id: crossButton
-		text: "cross"
-		width: isNxt ? 120: 90
+	
+	Rectangle {
+	    id: crossButton
+		width: isNxt ? 44:35
 		height: isNxt ? 44:35
-		fontColorUp: app.crossfade ?  "cornflowerblue" : "darkslategray" 
-		fontPixelSize: isNxt ? 20 : 16
+		color: colors.btnUp
+		radius: designElements.radius
+		
 		y: pauseButton.y
 		anchors {
-				left: repeatAllButton.right
-				leftMargin: isNxt ? 20 : 16
-			}
-		onClicked: {
-			app.crossfade = !app.crossfade
-			app.setPlayModes();
+			left: crossButtonOnButton.left
 		}
+		Image {
+			source: "drawables/crossfade.png"
+			width: isNxt ? 26:24
+			height: isNxt ? 26:24
+			anchors.centerIn: parent
+		}
+		MouseArea {
+			anchors.fill: parent
+			onClicked: {
+				app.crossfade = true
+				app.setPlayModes();
+			}
+		}
+		visible: !app.crossfade
 	}
+	
+	Rectangle {
+	    id: repeatOnButton
+		width: isNxt ? 44:35
+		height: isNxt ? 44:35
+		color: colors.btnUp
+		radius: designElements.radius
+		
+		y: pauseButton.y
+		anchors {
+			right: crossButtonOnButton.left
+			rightMargin: isNxt ? 19 : 15
+		}
+		Image {
+			source: "drawables/loop_on.png"
+			width: isNxt ? 26:24
+			height: isNxt ? 26:24
+			anchors.centerIn: parent
+		}
+		MouseArea {
+			anchors.fill: parent
+			onClicked: {
+				app.repeat = false
+				app.setPlayModes();
+			}
+		}
+		visible: app.repeat
+	}
+	
+	Rectangle {
+	    id: repeatButton
+		width: isNxt ? 44:35
+		height: isNxt ? 44:35
+		color: colors.btnUp
+		radius: designElements.radius
+		
+		y: pauseButton.y
+		anchors {
+			left: repeatOnButton.left
+		}
+		Image {
+			source: "drawables/loop.png"
+			width: isNxt ? 26:24
+			height: isNxt ? 26:24
+			anchors.centerIn: parent
+		}
+		MouseArea {
+			anchors.fill: parent
+			onClicked: {
+				app.repeat = true
+				app.setPlayModes();
+			}
+		}
+		visible: !app.repeat
+	}
+	
+	Rectangle {
+	    id: shuffleOnButton2
+		width: isNxt ? 44:35
+		height: isNxt ? 44:35
+		color: colors.btnUp
+		radius: designElements.radius
+		
+		y: pauseButton.y
+		anchors {
+			right: repeatOnButton.left
+			rightMargin: isNxt ? 19 : 15
+		}
+		Image {
+			source: "drawables/shuffle_on.png"
+			width: isNxt ? 26:24
+			height: isNxt ? 26:24
+			anchors.centerIn: parent
+		}
+		MouseArea {
+			anchors.fill: parent
+			onClicked: {
+				app.shuffle = false
+				app.setPlayModes();
+			}
+		}
+		visible: app.shuffle
+	}
+	
+	Rectangle {
+	    id: shuffleButton2
+		width: isNxt ? 44:35
+		height: isNxt ? 44:35
+		color: colors.btnUp
+		radius: designElements.radius
+		
+		y: pauseButton.y
+		anchors {
+			left: shuffleOnButton2.left
+		}
+		Image {
+			source: "drawables/shuffle.png"
+			width: isNxt ? 26:24
+			height: isNxt ? 26:24
+			anchors.centerIn: parent
+		}
+		MouseArea {
+			anchors.fill: parent
+			onClicked: {
+				app.shuffle = true
+				app.setPlayModes();
+			}
+		}
+		visible: !app.shuffle
+	}
+	
 
 	function getAllFromMetaData(){
 		if (debugOutput) console.log("*********sonos getAllFromMetaData filling the grid")
