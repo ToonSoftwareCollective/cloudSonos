@@ -1,6 +1,8 @@
+1.0.7
+- Buttons replaced by imageButtons
+
 1.0.6
 - Extra buttons for crossfade ande repeat created on mediaScreen
-
 
 1.0.5
 - Favoritescreen options for playlist added, time on tile posistion. error mediascreen solved (width op positionImage), favoritescreen playlists from favoritess to the left, configScreen saving and rebood procedure changed, Shortnames for long strings, image for radio in favoriteScreen
