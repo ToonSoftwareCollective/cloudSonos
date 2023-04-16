@@ -6,16 +6,17 @@ Screen {
 	id: favoritesScreen
 	property bool debugOutput : app.debugOutput
 
-	screenTitle: qsTr("Sonos Favorieten");
+	screenTitle: app.groupName
 	hasHomeButton: false
 	
 	property int  numberofItems :0
 	property int  numberofItems2 :0
 	property int  numberofItems3 :0
 	
-	onShown: {	
+	onShown: {
+			model.clear()
 			updatePlaylist()
-			updateFavoriteslist()
+			radioButtonList1.currentIndex = app.favoriteScreenRadioOption1
 	}
 	
 	
@@ -35,7 +36,7 @@ Screen {
 	Rectangle{
 		id: listviewContainer1
 		width: isNxt ? parent.width/2 -100 : parent.width/2 - 80
-		height: isNxt ? 200 : 160
+		height: isNxt ? 170:136
 		color: "white"
 		radius: isNxt ? 5 : 4
 		border.color: "black"
@@ -112,8 +113,58 @@ Screen {
 		iconSource: "qrc:/tsc/play.png"
 		onClicked: {
 			var playlistId = app.playlist[listview1.currentIndex].id
-			app.postGroupCommand("playlists", JSON.stringify({"playlistId" : "1",  "playOnCompletion" : true,  "playModes" : { "shuffle" : false }}))
-			app.setPlayList(playlistId);
+			if (debugOutput) console.log(app.playlist[listview1.currentIndex].id)
+			if (debugOutput) console.log(app.playlist[listview1.currentIndex].type)
+			
+			if (app.playlist[listview1.currentIndex].type === "favoriteType"){ //is a playlist from the favorites type
+				switch (radioButtonList1.currentIndex) {
+
+					case 0:
+						if (debugOutput) console.log("Vervangen");
+						app.postGroupCommand("favorites", JSON.stringify({ favoriteId : playlistId,  "playOnCompletion" : true, "action": "REPLACE",  "playModes" : { "shuffle" : false }}))
+						break;
+
+					case 1:
+						if (debugOutput) console.log("Toevoegen");
+						app.postGroupCommand("favorites", JSON.stringify({ favoriteId : playlistId,  "playOnCompletion" : true, "action": "APPEND",  "playModes" : { "shuffle" : false }}))
+						break;
+					case 2:
+						if (debugOutput) console.log("Invoegen");
+						app.postGroupCommand("favorites", JSON.stringify({ favoriteId : playlistId,  "playOnCompletion" : true, "action": "INSERT",  "playModes" : { "shuffle" : false }}))
+						break;
+					case 3:
+						if (debugOutput) console.log("Tussenvoegen");
+						app.postGroupCommand("favorites", JSON.stringify({ favoriteId : playlistId,  "playOnCompletion" : true, "action": "INSERT_NEXT",  "playModes" : { "shuffle" : false }}))
+						break;
+					default:
+						if (debugOutput) console.log("Ongeldig");
+						break;
+				}
+			}else{
+				switch (radioButtonList1.currentIndex) {
+					case 0:
+						if (debugOutput) console.log("Vervangen");
+						app.postGroupCommand("playlists", JSON.stringify({ playlistId : playlistId,  "playOnCompletion" : true, "action": "REPLACE",  "playModes" : { "shuffle" : false }}))
+						break;
+
+					case 1:
+						if (debugOutput) console.log("Toevoegen");
+						app.postGroupCommand("playlists", JSON.stringify({ playlistId : playlistId,  "playOnCompletion" : true, "action": "APPEND",  "playModes" : { "shuffle" : false }}))
+						break;
+					case 2:
+						if (debugOutput) console.log("Invoegen");
+						app.postGroupCommand("playlists", JSON.stringify({ playlistId : playlistId,  "playOnCompletion" : true, "action": "INSERT",  "playModes" : { "shuffle" : false }}))
+						break;
+					case 3:
+						if (debugOutput) console.log("Tussenvoegen");
+						app.postGroupCommand("playlists", JSON.stringify({ playlistId : playlistId,  "playOnCompletion" : true, "action": "INSERT_NEXT",  "playModes" : { "shuffle" : false }}))
+						break;
+					default:
+						if (debugOutput) console.log("Ongeldig");
+						break;
+				}
+			}
+			app.favoriteScreenRadioOption1 = radioButtonList1.currentIndex
 		}
 	}
 	
@@ -141,7 +192,7 @@ Screen {
 		text: "Items in afspeellijst:"
 		font.pixelSize:  isNxt ? 20 : 16
 		font.family: qfont.bold.name
-		visible: model2.length > 0
+		visible: numberofItems2 > 0
 		anchors {
 			top:		listviewContainer1.bottom
 			left:   	listviewContainer1.left
@@ -152,7 +203,7 @@ Screen {
 	Rectangle{
 		id: listviewContainer2
 		width: isNxt ? parent.width/2 -100 : parent.width/2 - 80
-		height: isNxt ? 200 : 190
+		height: isNxt ? 170:136
 		color: "white"
 		radius: isNxt ? 5 : 4
 		border.color: "black"
@@ -201,10 +252,65 @@ Screen {
 		}
 	}
 	
+	Image {
+		id: favoriteImage
+				source: (app.playlist[listview1.currentIndex].imageUrl.length > 5)? app.playlist[listview1.currentIndex].imageUrl : Qt.resolvedUrl("drawables/sonos.png")
+		fillMode: Image.PreserveAspectFit
+		height: isNxt ? 200:160
+		width: isNxt ? 200:160
+		anchors {
+			top:		listviewContainer1.bottom
+			horizontalCenter: listviewContainer1.horizontalCenter
+			topMargin : isNxt ? 10 : 8
+		}
+		visible: !listviewContainer2.visible
+	}
+	
+	Text {
+		id: playlistQueueTXT
+		width:  listviewContainer1.width
+		text: "Wijze van invoegen:"
+		font.pixelSize:  isNxt ? 20 : 16
+		font.family: qfont.bold.name
+		anchors {
+			left: listviewContainer1.left
+			top: listviewContainer2.visible? listviewContainer2.bottom : favoriteImage.visible ? favoriteImage.bottom: listviewContainer1.bottom
+			topMargin: 	isNxt ? 5 : 4
+		}
+	}
+
+	SonosRadioButtonList {
+		id: radioButtonList1
+		width: listviewContainer1.width
+		height: isNxt ? 90:72
+		gridCellWidth: isNxt ? 200:157
+		gridCellHeight: isNxt ? 32:25
+		radioWidth: isNxt ? 180:164
+		radioHeight:isNxt ? 29:23
+		backgroundColor:colors.canvas
+		
+		anchors {
+			left: listviewContainer1.left
+			top: playlistQueueTXT.bottom
+			topMargin: isNxt ? 5 : 4
+		}
+		title: qsTr("Local access")
+
+		Component.onCompleted: {
+			addItem("Vervangen");
+			addItem("Toevoegen");
+			addItem("Invoegen");
+			addItem("Tussenvoegen");
+			forceLayout();
+		}
+	}
+	
+	
+	
 	Text {
 		id: favoriteTXT
 		width:  160
-		text: "Afspeellijst/stations:"
+		text: "Favorieten/stations:"
 		font.pixelSize:  isNxt ? 20 : 16
 		font.family: qfont.bold.name
 		anchors {
@@ -217,7 +323,7 @@ Screen {
 	Rectangle{
 		id: listviewContainer3
 		width: isNxt ? parent.width/2 -100 : parent.width/2 - 80
-		height: isNxt ? 200 : 160
+		height: isNxt ? 170:136
 		color: "white"
 		radius: isNxt ? 5 : 4
 		border.color: "black"
@@ -295,7 +401,7 @@ Screen {
 		iconSource: "qrc:/tsc/play.png"
 		onClicked: {
 			var favoriteId = app.favorites[listview3.currentIndex].id
-			app.postGroupCommand("favorites", JSON.stringify({"favoriteId" : favoriteId}))
+			app.postGroupCommand("favorites", JSON.stringify({"favoriteId" : favoriteId ,"playOnCompletion" : true}))
 			app.containerType = "station"
 		}
 	}
@@ -316,7 +422,21 @@ Screen {
             }
 		}	
 	}
-
+	
+	
+	Image {
+		id: stationsImage
+		source: app.favorites[listview3.currentIndex].imageUrl
+		fillMode: Image.PreserveAspectFit
+		height: isNxt ? 200:160
+		width: isNxt ? 200:160
+		anchors {
+			top:		listviewContainer3.bottom
+			horizontalCenter: listviewContainer3.horizontalCenter
+			topMargin : isNxt ? 10 : 8
+		}
+		visible:  app.favorites[listview3.currentIndex].imageUrl.length > 5
+	}
 
 
 	
@@ -335,14 +455,19 @@ Screen {
                     var JsonObject= JSON.parse(JsonString)
 					var playlists = JsonObject.playlists
 					app.playlist = [];
-					model.clear()
-					numberofItems =  playlists.length
+					numberofItems =  0
 					for (var i in playlists) {
-						console.log(playlists[i].name)
-						app.playlist.push({"id": playlists[i].id, "fullname": playlists[i].name + "(" + playlists[i].trackCount + ")" , "name": playlists[i].name, "trackcount": playlists[i].trackCount});
-						listview1.model.append({name: app.playlist[i].fullname})
+						if (debugOutput) console.log(playlists[i].name)
+						app.playlist.push({"id": playlists[i].id, "fullname": playlists[i].name + "(" + playlists[i].trackCount + ")" , "name": playlists[i].name, "trackcount": playlists[i].trackCount, "imageUrl": ""});
+						var fullname = playlists[i].name + "(" + playlists[i].trackCount + ")"
+						if (fullname.length > 40){
+							fullname  = fullname.substring(0, 38) + ".. "
+						}
+						listview1.model.append({name: fullname })
+						numberofItems++
 					}
-					updateItems(app.playlist[0].id)
+					updateFavoriteslist()
+					
                 }
             }
         }
@@ -358,18 +483,24 @@ Screen {
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onreadystatechange = function() {
             if( xhr.readyState === 4){
+				model2.clear()
+				numberofItems2=0
                 if (xhr.status === 200 || xhr.status === 300  || xhr.status === 302) {
                     if (debugOutput) console.log(xhr.responseText)
                     var JsonString = xhr.responseText
                     var JsonObject= JSON.parse(JsonString)
 					var tracks = JsonObject.tracks
-					model2.clear()
-					//numberofItems2 =  tracks.length
-					numberofItems2=0
+					//model2.clear() and numberofItems2=0 moved upwards
 					for (var i in tracks) {
 						if (tracks[i].name) {
-							console.log(tracks[i].name)
-							listview2.model.append({name: tracks[i].artist + " - " + tracks[i].name})
+							if (debugOutput) console.log(tracks[i].name)
+							var type = "playlistType"
+							if (debugOutput) console.log(tracks[i].name)
+							var fullname = tracks[i].artist + " - " + tracks[i].name
+							if (fullname.length > 40){
+								fullname = fullname.substring(0, 38) + ".. "
+							}
+							listview2.model.append({"type": type, name: fullname})
 							numberofItems2++
 						}
 					}
@@ -395,12 +526,30 @@ Screen {
 					var items = JsonObject.items
 					app.favorites = [];
 					model3.clear()
-					numberofItems3 =  items.length
+					numberofItems3=0
 					for (var i in items) {
 						if (debugOutput) console.log(items[i].name)
-						app.favorites.push({"id": items[i].id, "name": items[i].name , "imageUrl": items[i].imageUrl});
-						listview3.model.append({name: app.favorites[i].name})
+						var type = items[i].resource.type
+						if (debugOutput) console.log(type)
+						if (type ==="PLAYLIST" || type ==="ALBUM"){
+							var type = "favoriteType"
+							app.playlist.push({"type": type, "id": items[i].id, "fullname": items[i].name + "(" + items[i].service.name +")" , "name": items[i].name, "trackcount": 0, "imageUrl": items[i].imageUrl});
+
+							var fullname = items[i].name + "(" + items[i].service.name +")"
+							if (fullname.length > 40){
+								var listname = fullname.substring(0, 35 - items[i].service.name.length)
+								fullname = listname + ".. (" + items[i].service.name +")"
+							}
+							listview1.model.append({name: fullname })
+							numberofItems++
+						}else{
+							var type = "streamType"
+							app.favorites.push({"type": type, "id": items[i].id, "name": items[i].name , "imageUrl": items[i].imageUrl});
+							listview3.model.append({name: items[i].name})
+							numberofItems3++
+						}
 					}
+					updateItems(app.playlist[0].id)
                 }
             }
         }

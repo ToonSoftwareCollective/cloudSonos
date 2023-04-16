@@ -44,6 +44,8 @@ App {
 	property bool 	showSlider: true
 	property bool 	visibleInDimState: false
 	
+	property int 	favoriteScreenRadioOption1: 0
+	
 	property bool 	tokenOK: true
 	property bool 	lineInAvailable:false
 	property bool 	savedFromConfigScreen:false
@@ -61,6 +63,11 @@ App {
 	property string messageSonosName : "Alle"
 	property int 	messageVolume : 20
 	property string  messageText
+	
+	property int message1Index: 0
+	property int message2Index: 0
+	property int message3Index: 0
+	property int message4Index: 0
 
     property string  households: ""
     property string  groupID: ""
@@ -88,10 +95,16 @@ App {
     property string  currentItemTrackArtistName: ""
     property int     currentItemTrackDurationMillis:0
 	property bool 	 currentLineInAvailable:false
-
+	
     property string  nextItemName: ""
     property string  nextItemTrackArtistName: ""
+
+	property string  currentItemNameShort: ""
+    property string  currentItemTrackArtistNameShort: ""
+    property string  nextItemNameShort: ""
+    property string  nextItemTrackArtistNameShort: ""
 	
+
 	property bool    showSonosIcon : true
 	property string  sonosName : ""
 	property string  sonosNameVoetbalApp : ""
@@ -100,6 +113,8 @@ App {
 	property string  token: ""
 	property string  refreshToken : ""
 	property bool    playFootballScores : false
+	
+	property bool    needReboot: false
 	
 
 	property variant settings : {
@@ -255,7 +270,11 @@ App {
 			mediaTray2.hide();
 		}
 		
-		if(savedFromConfigScreen){Qt.quit()}
+		if(savedFromConfigScreen & needReboot){
+			Qt.quit()
+		}else{
+			sonosConfigScreen.hide()
+		}
 	}
 
     function getHouseholdsAndGroups(){
@@ -489,6 +508,25 @@ App {
         }
         xhr.send()
     }
+	
+	function breakAtWholeWord(sentence, maxLength) {
+	if (debugOutput) console.log("*********sonos sentence: " + sentence)
+	if (debugOutput) console.log("*********sonos maxLength: " + maxLength)
+		if (sentence.length > maxLength){
+			var lastWordIndex = sentence.lastIndexOf(" ", maxLength)
+			if (debugOutput) console.log("*********sonos lastWordIndex: " + lastWordIndex)
+			if (lastWordIndex === -1) {
+				// If no space was found, break at the maximum width
+				lastWordIndex = maxLength
+				sentence = sentence.substring(0, lastWordIndex)
+			}
+			sentence = sentence.substring(0, lastWordIndex)  + ".."
+		}else{
+			sentence = sentence
+		}
+		if (debugOutput) console.log("*********sonos return sentence: " + sentence)
+		return sentence
+	}
 
     function getMetaData(){
         if (debugOutput) console.log("*********sonos playbackMetadata")
@@ -544,14 +582,23 @@ App {
 								currentItemImageUrl=""
 					}else{
 							showSlider=true
-                      		currentItemName=JsonObject.currentItem.track.name
+                      		if (JsonObject.currentItem.track.name)currentItemName=JsonObject.currentItem.track.name
                         	if (JsonObject.currentItem.track.imageUrl) currentItemImageUrl=JsonObject.currentItem.track.imageUrl
-                         	currentItemTrackArtistName=JsonObject.currentItem.track.artist.name
-                        	currentItemTrackDurationMillis=JsonObject.currentItem.track.durationMillis
-                        	nextItemName=JsonObject.nextItem.track.name
-                        	nextItemTrackArtistName=JsonObject.nextItem.track.artist.name
-							streamInfo = ""
+                         	if (JsonObject.currentItem.track.artist.name)currentItemTrackArtistName=JsonObject.currentItem.track.artist.name
+                        	if (JsonObject.currentItem.track.durationMillis)currentItemTrackDurationMillis=JsonObject.currentItem.track.durationMillis
+							
+							try{
+								if (JsonObject.nextItem.track.name)nextItemName=JsonObject.nextItem.track.name
+								if (JsonObject.nextItem.track.artist.name)nextItemTrackArtistName=JsonObject.nextItem.track.artist.name	
+							} catch(e) {
+							}
+							streamInfo = ""					
                 	}
+					
+					currentItemNameShort = breakAtWholeWord(currentItemName, 38);
+					currentItemTrackArtistNameShort = breakAtWholeWord(currentItemTrackArtistName, 38);
+					nextItemNameShort = breakAtWholeWord(nextItemName, 38);
+					nextItemTrackArtistNameShort = breakAtWholeWord(nextItemTrackArtistName, 38);
 					currentLineInAvailable =  sonosArray[playerIndex].group.lineInAvailable
            	} else {
 				if (debugOutput) console.log("*********sonos playbackMetadata error response:" + xhr.responseText)
@@ -629,7 +676,7 @@ App {
       xhr.withCredentials = true
       var body= "msg=" + encodeURIComponent(message) + "&lang=" + voice + "&source=ttsmp3"
       var url =  "https://ttsmp3.com/makemp3_new.php"
-      console.log(url)
+      if (debugOutput) console.log(url)
       xhr.open("POST", url);
       xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
       xhr.onreadystatechange = function() {

@@ -15,6 +15,7 @@ Screen {
 	property string		tmpSonosNameVoetbalApp: app.sonosNameVoetbalApp;
 	property int 		numberofItems:0
 	property bool		fromDisclaimer : false
+	property string		rightButtonText: "Opslaan";
 
 	
 	onShown: {
@@ -22,7 +23,7 @@ Screen {
 		showSonosIconToggle.isSwitchedOn = tmpShowSonosIcon;
 		voetbalToggle.isSwitchedOn = tmpPlayFootballScores;
 		visibleToggle.isSwitchedOn = tmpVisible;
-		addCustomTopRightButton("Opslaan en herstarten");
+		addCustomTopRightButton(rightButtonText);
 		userNameLabel.inputText = tmpUserName;
 		passWordLAbel.inputText = tmpPassWord;
 		if (debugOutput) console.log("*********sonos tmpUserName: " + tmpUserName)
@@ -66,6 +67,7 @@ Screen {
 
 	onCustomButtonClicked: {
 		if (!app.sonosWarningShown){
+			app.needReboot = true
 			showPopup()
 		}else{
 			saveSettings()
@@ -84,12 +86,14 @@ Screen {
 	function saveUserName(text) {
 		if (text) {
 			tmpUserName = text;
+			app.needReboot = true
 		}
 	}
 	
 	function savePassWord(text) {
 		if (text) {
 			tmpPassWord = text;
+			app.needReboot = true
 		}
 	}
 	
@@ -140,6 +144,8 @@ Screen {
 		}
 
 		onClicked: {
+		    rightButtonText= "Opslaan en herstarten";
+		    //stage.customButton.label = "Opslaan en herstarten";
 			qkeyboard.open("Gebruikersnaam", userNameLabel.inputText, saveUserName)
 		}
 	}
@@ -157,6 +163,7 @@ Screen {
 			topMargin: isNxt ? 8 : 6
 		}
 		onClicked: {
+			rightButtonText= "Opslaan en herstarten";
 			qkeyboard.open("Wachtwoord", passWordLAbel.inputText, savePassWord)
 		}
 	}
