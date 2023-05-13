@@ -1,3 +1,15 @@
+1.0.11
+- speakerScreen stereo balance added
+
+1.0.10
+- speakerScreen Added
+
+1.0.9
+- playlist added
+
+1.0.8
+- extra function to collect images (soundCloud). Show somos image on tile and mediaScreen when no image
+
 1.0.7
 - Buttons replaced by imageButtons
 

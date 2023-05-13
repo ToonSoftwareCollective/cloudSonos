@@ -30,6 +30,12 @@ App {
 	property url 	favoritesScreenUrl : "FavoritesScreen.qml"
 	property 		FavoritesScreen favoritesScreen
 	
+	property url 	playlistScreenUrl : "PlaylistScreen.qml"
+	property 		PlaylistScreen playlistScreen
+
+	property url 	speakerScreenUrl : "SpeakerScreen.qml"
+	property 		SpeakerScreen speakerScreen
+	
 	//property url 	thumbnailIcon: "qrc:/tsc/SonosThumb.png"
 	property url 	thumbnailIcon: "qrc:/tsc/SonosSystrayIcon.png"
 	
@@ -49,6 +55,8 @@ App {
 	property bool 	tokenOK: true
 	property bool 	lineInAvailable:false
 	property bool 	savedFromConfigScreen:false
+	property bool 	savedFromMediaScreen:false
+	
 	property string  containerType: ""
 	property string  streamInfo: ""
 	
@@ -72,6 +80,7 @@ App {
     property string  households: ""
     property string  groupID: ""
     property string  groupName: ""
+	property string  groupURL: ""
     property string  playerID: ""
     property string  playerName: ""
     property int     groupVolume: 0
@@ -150,6 +159,8 @@ App {
 		registry.registerWidget("screen", mediaScreenUrl, this, "mediaScreen");
 		registry.registerWidget("systrayIcon", trayUrl, this, "mediaTray2");
 		registry.registerWidget("screen", favoritesScreenUrl, this, "favoritesScreen");
+		registry.registerWidget("screen", playlistScreenUrl, this, "playlistScreen");
+		registry.registerWidget("screen", speakerScreenUrl, this, "speakerScreen");
 		registry.registerWidget("tile", tileUrl, this, null, {thumbLabel: qsTr("sonosCloud"), thumbIcon: thumbnailIcon, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
 		registry.registerWidget("screen", sonosConfigScreenUrl, this, "sonosConfigScreen");
 	}
@@ -272,8 +283,10 @@ App {
 		
 		if(savedFromConfigScreen & needReboot){
 			Qt.quit()
-		}else{
+		}else if(savedFromConfigScreen){
 			sonosConfigScreen.hide()
+		}else{
+		
 		}
 	}
 
@@ -304,8 +317,9 @@ App {
         xhr.send()
     }
 
+/*
     function getGroups(){
-        if (debugOutput) console.log("*********sonos getGroups")
+console.log("*********sonos getGroups")
         var xhr = new XMLHttpRequest();
         xhr.withCredentials = true;
         xhr.open("GET", "https://api.ws.sonos.com/control/api/v1/households/" + households + "/groups");
@@ -316,19 +330,21 @@ App {
                 if (xhr.status === 200 || xhr.status === 300  || xhr.status === 302) {
                     if (debugOutput) console.log(xhr.responseText)
 					sonosArray = []
+					numberofItems = 0
                     var JsonString = xhr.responseText
                     var JsonObject= JSON.parse(JsonString)
 					for (var a in JsonObject.groups){
+						numberofItems++
 						for (var i in JsonObject.players){
 							if(JsonObject.groups[a].playerIds==JsonObject.players[i].id){
 								for (var b in JsonObject.players[i].capabilities){
 									if(JsonObject.players[i].capabilities[b]==="LINE_IN"){lineInAvailable=true}else{lineInAvailable=false}	
 								}
-								numberofItems++
 								sonosArray.push({"group" : {"id": JsonObject.groups[a].id, "name": JsonObject.groups[a].name, "lineInAvailable" : lineInAvailable},"player":{"id": JsonObject.players[i].id, "name": JsonObject.players[i].name, "lineInAvailable" : lineInAvailable}})
 								if (debugOutput) console.log("*********sonos sonosArray.push:  " + "{\"group\" : {\"id\": " + JsonObject.groups[a].id + " , \"name\": " + JsonObject.groups[a].name + ", \"lineInAvailable\" : " + lineInAvailable + "},\"player\":{\"id\": " + JsonObject.players[i].id + ", \"name\": " + JsonObject.players[i].name + ", \"lineInAvailable\" : " + lineInAvailable + "}}")
 							}
 						}
+						
 					}
 					
 					if(playerIndex>=numberofItems){playerIndex = 0}
@@ -358,8 +374,72 @@ App {
         xhr.send()
     }
 
+*/
+
+    function getGroups(){
+        if (debugOutput) console.log("*********sonos getGroups")
+        var xhr = new XMLHttpRequest();
+        xhr.withCredentials = true;
+        xhr.open("GET", "https://api.ws.sonos.com/control/api/v1/households/" + households + "/groups");
+        xhr.setRequestHeader("Authorization", "Bearer " + token);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function() {
+            if( xhr.readyState === 4){
+                if (xhr.status === 200 || xhr.status === 300  || xhr.status === 302) {
+                    if (debugOutput) console.log(xhr.responseText)
+					sonosArray = []
+					numberofItems = 0
+                    var JsonString = xhr.responseText
+                    var JsonObject= JSON.parse(JsonString)
+					for (var a in JsonObject.groups){
+						for (var i in JsonObject.players){
+							if (debugOutput) console.log("sonos check " + JsonObject.groups[a].name + " : "+JsonObject.groups[a].playerIds+"=="+JsonObject.players[i].id)
+							if (JSON.stringify(JsonObject.groups[a].playerIds).search(JSON.stringify(JsonObject.players[i].id)) > -1 ) {
+								for (var b in JsonObject.players[i].capabilities){
+									if(JsonObject.players[i].capabilities[b]==="LINE_IN"){lineInAvailable=true}else{lineInAvailable=false}	
+								}
+								var url = JsonObject.players[i].websocketUrl.split("wss://")[1].split(":")[0]
+								sonosArray.push({"group" : {"id": JsonObject.groups[a].id, "name": JsonObject.groups[a].name, "members" : JsonObject.groups[a].playerIds , "lineInAvailable" : lineInAvailable},"player":{"id": JsonObject.players[i].id, "url": url, "name": JsonObject.players[i].name, "lineInAvailable" : lineInAvailable}})
+								if (debugOutput) console.log("*********sonos sonosArray.push:  " + "{\"group\" : {\"id\": " + JsonObject.groups[a].id + " , \"name\": " + JsonObject.groups[a].name + ", \"lineInAvailable\" : " + lineInAvailable + "},\"player\":{\"id\": " + JsonObject.players[i].id + ", \"url\": "+ url + ", \"name\": " + JsonObject.players[i].name + ", \"lineInAvailable\" : " + lineInAvailable + "}}")
+                                if (debugOutput) console.log("*********sonos sonosArray:  " + JSON.stringify(sonosArray))
+								break
+							}
+						}
+						numberofItems++
+					}
+
+					if(playerIndex>=numberofItems){playerIndex = 0}
+					
+					if(mediaScreen){mediaScreen.refreshScreen()}
+
+                    groupID = sonosArray[playerIndex].group.id
+                    groupName = sonosArray[playerIndex].group.name
+                    playerID = sonosArray[playerIndex].player.id
+                    playerName = sonosArray[playerIndex].player.name
+						
+                    if (debugOutput) console.log(groupID)
+                    if (debugOutput) console.log(groupName)
+                    if (debugOutput) console.log(playerID)
+                    if (debugOutput) console.log(playerName)
+					setAfterTotalStartTimer.running = true
+					sonosPlayInfoTimer.running = true
+					//get images for the favorites
+					favoritesScreen.updateFavoriteslist()
+                }else{
+					if (debugOutput) console.log("sonos getGroups fault response:" + xhr.responseText)
+					if (xhr.responseText.indexOf("keymanagement.service")> 0){
+						tokenOK = false
+						SonosTokenFunctions.getRefreshToken()
+					}
+				}
+            }
+        }
+        xhr.send()
+    }
+	
+	
     function getGroupVolume(){
-        if (debugOutput) console.log("*********sonos getGroupVolume")
+		if (debugOutput) console.log("*********sonos getGroupVolume")
         var xhr = new XMLHttpRequest();
         xhr.withCredentials = true;
         xhr.open("GET", "https://api.ws.sonos.com/control/api/v1/groups/" + sonosArray[playerIndex].group.id + "/groupVolume");
@@ -373,8 +453,8 @@ App {
                     var JsonObject= JSON.parse(JsonString)
                     groupVolume = JsonObject.volume
                     groupMuted = JsonObject.muted
-                    if (debugOutput) console.log(groupVolume)
-                    if (debugOutput) console.log(groupMuted)
+					if (debugOutput) console.log("*********sonos groupVolume: " + groupVolume)
+					if (debugOutput) console.log("*********sonos groupMuted: " + groupMuted)
                 }
             }
         }
@@ -392,11 +472,30 @@ App {
             if( xhr.readyState === 4){
                 if (xhr.status === 200 || xhr.status === 300  || xhr.status === 302) {
                     if (debugOutput) console.log(xhr.responseText)
-                    getGroupVolume()
+					getGroupVolume()
                 }
             }
         }
         xhr.send(JSON.stringify({"volume": volume}));
+    }
+	
+	function setGroupMuted(mute){
+		console.log("*********sonos setGroupMuted:  " + mute)
+		console.log("*********sonos setGroupMuted:  " +JSON.stringify({"muted": mute}))
+        var xhr = new XMLHttpRequest();
+        xhr.withCredentials = true;
+        xhr.open("POST", "https://api.ws.sonos.com/control/api/v1/groups/"  + sonosArray[playerIndex].group.id +  "/groupVolume/mute");
+        xhr.setRequestHeader("Authorization", "Bearer " + token);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function() {
+            if( xhr.readyState === 4){
+                if (xhr.status === 200 || xhr.status === 300  || xhr.status === 302) {
+					console.log(xhr.responseText)
+                    getGroupVolume()
+                }
+            }
+        }
+        xhr.send(JSON.stringify({"muted": mute}));
     }
 	
 	function setSeek(position){
@@ -418,8 +517,12 @@ App {
   }
 
 
-    function setPlayModes(){
-        if (debugOutput) console.log("*********sonos setPlayModes")
+
+	    function setPlayModes(jsType, jsValue){
+console.log("*********sonos setPlayModes")
+var jsonString = "{\"playModes\": {\"" + jsType + "\": " + jsValue +"}}"
+console.log("*********sonos setPlayModes1" + jsonString)
+
         var xhr = new XMLHttpRequest();
         xhr.withCredentials = true;
         xhr.open("POST", "https://api.ws.sonos.com/control/api/v1/groups/"  + sonosArray[playerIndex].group.id +  "/playback/playMode");
@@ -428,14 +531,16 @@ App {
         xhr.onreadystatechange = function() {
             if( xhr.readyState === 4){
                 if (xhr.status === 200 || xhr.status === 300  || xhr.status === 302) {
-                    if (debugOutput) console.log(xhr.responseText)
+console.log(xhr.responseText)
                     getPlaybackStatus()
                 }
             }
         }
-        xhr.send(JSON.stringify({"playModes": {"repeat": repeat,"repeatOne": repeatOne ,"crossfade": crossfade,"shuffle": shuffle}}));
+        //xhr.send(JSON.stringify({"playModes": {"repeat": repeat,"repeatOne": repeatOne ,"crossfade": crossfade,"shuffle": shuffle}}));
+		xhr.send(jsonString);
     }
 	
+
 	function setPlayList(playlistid){
         if (debugOutput) console.log("*********sonos setPlayList : " + playlistid)
         var xhr = new XMLHttpRequest();
@@ -510,11 +615,8 @@ App {
     }
 	
 	function breakAtWholeWord(sentence, maxLength) {
-	if (debugOutput) console.log("*********sonos sentence: " + sentence)
-	if (debugOutput) console.log("*********sonos maxLength: " + maxLength)
 		if (sentence.length > maxLength){
 			var lastWordIndex = sentence.lastIndexOf(" ", maxLength)
-			if (debugOutput) console.log("*********sonos lastWordIndex: " + lastWordIndex)
 			if (lastWordIndex === -1) {
 				// If no space was found, break at the maximum width
 				lastWordIndex = maxLength
@@ -524,9 +626,30 @@ App {
 		}else{
 			sentence = sentence
 		}
-		if (debugOutput) console.log("*********sonos return sentence: " + sentence)
 		return sentence
 	}
+	
+	function checkImages(image1, image2){
+		if (debugOutput) console.log("*********sonos checkImages")
+		var returnImage = ""
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", image1, false);
+        xhr.onreadystatechange = function() {
+			
+            if( xhr.readyState === 4){
+                if (xhr.status === 200 || xhr.status === 300  || xhr.status === 302) {
+					if (debugOutput) console.log("*********sonos returning: " + image1)
+					returnImage = image1
+                }else{
+					if (debugOutput) console.log("*********sonos returning: " + image2)
+					returnImage = image2
+				}
+            }
+        }
+        xhr.send()
+		return returnImage
+	}
+	
 
     function getMetaData(){
         if (debugOutput) console.log("*********sonos playbackMetadata")
@@ -551,8 +674,10 @@ App {
 					stationName=""
 					currentItemName=""
 					currentItemTrackArtistName=""
-					currentItemImageUrl=""
+					//currentItemImageUrl=""
 					streamInfo = ""
+					var image1 = ""
+					var image2 = ""
 					if(containerType=="station"){
 							showSlider=false
 							stationName=JsonObject.container.name
@@ -560,7 +685,7 @@ App {
 							currentItemTrackArtistName="Station"
 							for (var i in favorites){
 								if(favorites[i].name === stationName){
-									currentItemImageUrl=favorites[i].imageUrl
+									image1=favorites[i].imageUrl
 								}
 							}
 							if(JsonObject.hasOwnProperty('streamInfo')){
@@ -569,9 +694,9 @@ App {
 					} else if(containerType=="linein.homeTheater"){
 								showSlider=false
 								stationName=""
-								currentItemName="Line In"
+								currentItemName="Line In/Home Theater"
 								currentItemTrackArtistName=""
-								currentItemImageUrl=""
+								image1=""
 								streamInfo = ""
 					}else if (typeof containerType==="undefined"){
 								showSlider=false
@@ -579,14 +704,14 @@ App {
 								streamInfo = ""
 								currentItemName="Geen bron"
 								currentItemTrackArtistName=""
-								currentItemImageUrl=""
+								image1=""
 					}else{
 							showSlider=true
                       		if (JsonObject.currentItem.track.name)currentItemName=JsonObject.currentItem.track.name
-                        	if (JsonObject.currentItem.track.imageUrl) currentItemImageUrl=JsonObject.currentItem.track.imageUrl
+                        	if (JsonObject.currentItem.track.imageUrl) image1=JsonObject.currentItem.track.imageUrl
                          	if (JsonObject.currentItem.track.artist.name)currentItemTrackArtistName=JsonObject.currentItem.track.artist.name
                         	if (JsonObject.currentItem.track.durationMillis)currentItemTrackDurationMillis=JsonObject.currentItem.track.durationMillis
-							
+							if (JsonObject.container.imageUrl)image2=JsonObject.container.imageUrl
 							try{
 								if (JsonObject.nextItem.track.name)nextItemName=JsonObject.nextItem.track.name
 								if (JsonObject.nextItem.track.artist.name)nextItemTrackArtistName=JsonObject.nextItem.track.artist.name	
@@ -600,6 +725,14 @@ App {
 					nextItemNameShort = breakAtWholeWord(nextItemName, 38);
 					nextItemTrackArtistNameShort = breakAtWholeWord(nextItemTrackArtistName, 38);
 					currentLineInAvailable =  sonosArray[playerIndex].group.lineInAvailable
+					
+					if (image2 !==""){
+						currentItemImageUrl = checkImages(image1, image2)
+					}else{
+						currentItemImageUrl = image1
+					}
+					currentItemImageUrl = checkImage(currentItemImageUrl)
+					
            	} else {
 				if (debugOutput) console.log("*********sonos playbackMetadata error response:" + xhr.responseText)
 				if (xhr.responseText.indexOf("invalid_access_token")> 0){
@@ -771,6 +904,25 @@ App {
 		http.send();
 	}
 	
+	function checkImage(image){
+		if (debugOutput) console.log("*********sonos checkImage")
+		var returnImage = ""
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", image, false);
+        xhr.onreadystatechange = function() {
+            if( xhr.readyState === 4){
+                if (xhr.status === 200 || xhr.status === 300  || xhr.status === 302) {
+					if (debugOutput) console.log("*********sonos returning: " + image)
+					returnImage = image
+                }else{
+					returnImage = "drawables/sonos.png"
+				}
+            }
+        }
+        xhr.send()
+		return returnImage
+	}
+	
 	
 	function addTrackTimer() {	
 		positionMillis = positionMillis + 1000;
@@ -794,7 +946,7 @@ App {
 	
 	Timer {
 		id: checkHouseholdTimer //check if speaker confioguration has changed
-		interval: 300000
+		interval: 60000
 		triggeredOnStart: false
 		running: true
 		repeat: true

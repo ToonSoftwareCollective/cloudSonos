@@ -8,6 +8,8 @@ Screen {
 	property bool debugOutput : app.debugOutput
 	property int numberofItems:0
 	property int numberofItems2:0
+	
+	hasHomeButton: false
 
 	
 	onShown: {
@@ -122,7 +124,7 @@ Screen {
 		listview1.model.append({name: "Alle"});
 		numberofItems =  app.sonosArray.length
 		for (var i in app.sonosArray) {
-			listview1.model.append({name: app.sonosArray[i].player.name})
+			listview1.model.append({name: app.sonosArray[i].group.name})
 		}
 	}
 	
