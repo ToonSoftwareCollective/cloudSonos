@@ -53,6 +53,20 @@ Tile {
 		color: "white"
 		
 		Image {
+			id: missingPlayingImage
+			source: "drawables/sonos.png"
+			fillMode: Image.PreserveAspectFit
+			height: parent.heigth - 6
+			width: parent.width - 6
+			anchors {
+				top: parent.top
+				horizontalCenter: parent.horizontalCenter
+				topMargin: 1
+			}
+			visible : app.currentItemImageUrl == "drawables/sonos.png"
+		}
+	
+		Image {
 			id: nowPlayingImage
 			source: app.currentItemImageUrl
 			fillMode: Image.PreserveAspectFit
@@ -64,7 +78,7 @@ Tile {
 				topMargin: 1
 			}
 		}
-		visible:  (app.currentItemImageUrl.length > 5) & !showNext & (!dimState || app.visibleInDimState)
+		visible:  !showNext & (!dimState || app.visibleInDimState)
 	}
 	
 	//shows you the now playing artist / number.
@@ -286,7 +300,8 @@ Tile {
 			app.pauseButtonVisible = false;
 			app.setSimpleGroupCommand("/playback/pause");
 		}
-		visible: !dimState && app.pauseButtonVisible
+		//visible: !dimState && app.pauseButtonVisible && app.showSlider
+		visible: !dimState && app.pauseButtonVisible 
 	}
 	
 	IconButton {
@@ -304,6 +319,7 @@ Tile {
 			app.setSimpleGroupCommand("/playback/play");
 			}
 		visible: !dimState && app.playButtonVisible
+		//visible: !dimState && app.playButtonVisible && app.showSlider
 	}
 	
 	IconButton {
@@ -340,6 +356,22 @@ Tile {
 			}
 		}
 		visible: !dimState
+	}
+	
+	Text {
+		id: groupVolume
+		text: app.groupVolume
+		font.pixelSize: isNxt ? 15 : 12
+		font.family: qfont.regular.name
+		font.bold: true
+		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
+		anchors {
+			bottom: volumeUp.top
+			right: volumeUp.right
+			rightMargin: isNxt ? 5 : 4
+			bottomMargin: isNxt ? 5 : 4
+		}
+		visible: volumeUp.visible
 	}
 	
 	Text {

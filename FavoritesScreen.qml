@@ -5,6 +5,8 @@ import qb.components 1.0
 Screen {
 	id: favoritesScreen
 	property bool debugOutput : app.debugOutput
+	
+	property bool screenisVisible: false
 
 	screenTitle: app.groupName
 	hasHomeButton: false
@@ -17,8 +19,12 @@ Screen {
 			model.clear()
 			updatePlaylist()
 			radioButtonList1.currentIndex = app.favoriteScreenRadioOption1
+			screenisVisible = true
 	}
 	
+	onHidden: {
+		screenisVisible = false
+	}
 	
 	Text {
 		id: playlistTXT
@@ -254,7 +260,7 @@ Screen {
 	
 	Image {
 		id: favoriteImage
-				source: (app.playlist[listview1.currentIndex].imageUrl.length > 5)? app.playlist[listview1.currentIndex].imageUrl : Qt.resolvedUrl("drawables/sonos.png")
+		source: screenisVisible?  (app.playlist[listview1.currentIndex].imageUrl.length > 5)? app.playlist[listview1.currentIndex].imageUrl : Qt.resolvedUrl("drawables/sonos.png") : ""
 		fillMode: Image.PreserveAspectFit
 		height: isNxt ? 200:160
 		width: isNxt ? 200:160
@@ -426,7 +432,7 @@ Screen {
 	
 	Image {
 		id: stationsImage
-		source: app.favorites[listview3.currentIndex].imageUrl
+		source: screenisVisible? app.favorites[listview3.currentIndex].imageUrl: ""
 		fillMode: Image.PreserveAspectFit
 		height: isNxt ? 200:160
 		width: isNxt ? 200:160
@@ -435,7 +441,7 @@ Screen {
 			horizontalCenter: listviewContainer3.horizontalCenter
 			topMargin : isNxt ? 10 : 8
 		}
-		visible:  app.favorites[listview3.currentIndex].imageUrl.length > 5
+		visible:  screenisVisible? app.favorites[listview3.currentIndex].imageUrl.length > 5 : false
 	}
 
 
@@ -533,18 +539,21 @@ Screen {
 						if (debugOutput) console.log(type)
 						if (type ==="PLAYLIST" || type ==="ALBUM"){
 							var type = "favoriteType"
-							app.playlist.push({"type": type, "id": items[i].id, "fullname": items[i].name + "(" + items[i].service.name +")" , "name": items[i].name, "trackcount": 0, "imageUrl": items[i].imageUrl});
+							
+							var selectedImage = app.checkImage(items[i].imageUrl)
+							app.playlist.push({"type": type, "id": items[i].id, "fullname": items[i].name + "(" + items[i].service.name +")" , "name": items[i].name, "trackcount": 0, "imageUrl": selectedImage});
 
 							var fullname = items[i].name + "(" + items[i].service.name +")"
 							if (fullname.length > 40){
 								var listname = fullname.substring(0, 35 - items[i].service.name.length)
 								fullname = listname + ".. (" + items[i].service.name +")"
 							}
-							listview1.model.append({name: fullname })
+							listview1.model.append({name: fullname})
 							numberofItems++
 						}else{
 							var type = "streamType"
-							app.favorites.push({"type": type, "id": items[i].id, "name": items[i].name , "imageUrl": items[i].imageUrl});
+							var selectedImage = app.checkImage(items[i].imageUrl)
+							app.favorites.push({"type": type, "id": items[i].id, "name": items[i].name , "imageUrl": selectedImage});
 							listview3.model.append({name: items[i].name})
 							numberofItems3++
 						}
