@@ -8,7 +8,7 @@
 #
 #===================================================================================================================================================================
 
-#VERSION-0#
+#VERSION-1#
 
 # Start
 
@@ -21,7 +21,7 @@ echo "$(date '+%d/%m/%Y %H:%M:%S') TSC script instructed me to do some sonos"
 		# 1ST REQUEST
 		curl --location \
 		-c /var/tmp/cookie.txt \
-		'https://api.sonos.com/login/v3/oauth/selectHousehold?scope=playback-control-all&client_id=000000000000-00000000000-0000000000&response_type=code&redirect_uri=http%253A%252F%252Flocalhost&state=testState' \
+		'https://api.sonos.com/login/v3/oauth/selectHousehold?scope=playback-control-all&client_id=40777334-867e-4392-8f54-cf099dd39d05&response_type=code&redirect_uri=http%253A%252F%252Flocalhost&state=testState' \
 		>/var/tmp/sonosstep1.txt
 
 
@@ -49,12 +49,12 @@ echo "$(date '+%d/%m/%Y %H:%M:%S') TSC script instructed me to do some sonos"
 		
 		# 3RD REQUEST
 		curl --location -k \
-		'https://api.sonos.com/login/v3/oauth/authorize?action=submit&response_type=code&client_id=000000000000-00000000000-0000000000&state=testState&redirect_uri=http%253A%252F%252Flocalhost&scope=playback-control-all'  \
+		'https://api.sonos.com/login/v3/oauth/authorize?action=submit&response_type=code&client_id=40777334-867e-4392-8f54-cf099dd39d05&state=testState&redirect_uri=http%253A%252F%252Flocalhost&scope=playback-control-all'  \
 		--dump-header /var/tmp/header.txt \
 		-c /var/tmp/cookie.txt \
 		-b /var/tmp/cookie.txt \
 		--form "_csrf=$CSRF2" \
-		--form 'clientId=000000000000-00000000000-0000000000' \
+		--form 'clientId=40777334-867e-4392-8f54-cf099dd39d05' \
 		--form 'redirectUri=http://localhost' \
 		--form 'responseType=code' \
 		--form 'authScope=playback-control-all' \
@@ -71,7 +71,7 @@ echo "$(date '+%d/%m/%Y %H:%M:%S') TSC script instructed me to do some sonos"
 
 		#GET BEARER TOKENS FROM CODE
 		curl -X POST -H "Content-Type: application/x-www-form-urlencoded;charset=utf-8" \
-		-H "Authorization: Basic AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" \
+		-H "Authorization: Basic NDA3NzczMzQtODY3ZS00MzkyLThmNTQtY2YwOTlkZDM5ZDA1OjcwZGQyNTFhLWI3MTctNDc0Ni05NTYwLTIxMzkxN2Y0ZGVkNA==" \
 		"https://api.sonos.com/login/v3/oauth/access" \
 		-d "grant_type=authorization_code&code=$CODE&redirect_uri=http%3A%2F%2Flocalhost" > /var/tmp/sonosBearer.txt
 
@@ -93,7 +93,7 @@ echo "$(date '+%d/%m/%Y %H:%M:%S') TSC script instructed me to do some sonos"
 		echo "$(date '+%d/%m/%Y %H:%M:%S') RFTOKEN found : $RFTOKEN"
 
 		curl -X POST -H "Content-Type: application/x-www-form-urlencoded;charset=utf-8" \
-		-H "Authorization: Basic AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" \
+		-H "Authorization: Basic NDA3NzczMzQtODY3ZS00MzkyLThmNTQtY2YwOTlkZDM5ZDA1OjcwZGQyNTFhLWI3MTctNDc0Ni05NTYwLTIxMzkxN2Y0ZGVkNA==" \
 		"https://api.sonos.com/login/v3/oauth/access" \
 		-d "grant_type=refresh_token&refresh_token=$RFTOKEN" > /var/tmp/sonosBearer.txt
 
@@ -102,6 +102,7 @@ echo "$(date '+%d/%m/%Y %H:%M:%S') TSC script instructed me to do some sonos"
 
 		rm -f /var/tmp/sonos_refresh.txt
 	fi
+
 
 
 
