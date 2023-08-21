@@ -1,6 +1,3 @@
-//
-// Sonos app by Harmen Bartelink, further enhanced by Toonz
-//
 
 import QtQuick 2.1
 import BasicUIControls 1.0
@@ -9,14 +6,27 @@ import qb.components 1.0
 Tile {
 	id: sonosTile
 	property bool		showNext : false
+	property bool		debugOutput : app.debugOutput
 
 	onClicked: {
-		//app.playGoogleTTStoSonos("knopje is gedrukt")
 		if (app.mediaScreen){	
 			app.mediaScreen.show();
 		}
 	}
 	
+	onDimStateChanged: {
+		//ScreenStateController.ScreenActive
+		if (debugOutput) console.log("*********sonos dimState changed")
+		if (dimState){
+			if (debugOutput) console.log("*********sonos going to dimstate")
+			app.isDimmed = true
+		}else{
+			if (debugOutput) console.log("*********sonos waking up from dimmed")
+			app.isDimmed = false
+		}
+		app.setTimersDimMode()
+	}
+
 
 	//Show you the active zone name selected in the mediascreen.
 	Text {

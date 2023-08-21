@@ -535,7 +535,8 @@ Screen {
 					numberofItems3=0
 					for (var i in items) {
 						if (debugOutput) console.log(items[i].name)
-						var type = items[i].resource.type
+						var type = "streamType"
+						if (items[i].resource) type = items[i].resource.type
 						if (debugOutput) console.log(type)
 						if (type ==="PLAYLIST" || type ==="ALBUM"){
 							var type = "favoriteType"
