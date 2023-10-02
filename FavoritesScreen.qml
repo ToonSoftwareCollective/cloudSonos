@@ -559,7 +559,9 @@ Screen {
 							numberofItems3++
 						}
 					}
-					updateItems(app.playlist[0].id)
+					if (app.playlist[0]) {
+						if (app.playlist[0].id) updateItems(app.playlist[0].id);
+					}
                 }
             }
         }

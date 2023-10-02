@@ -709,7 +709,7 @@ Screen {
 		color: colors.canvas
 
 		anchors {
-			top: frame1_left
+			top: frame1_left.top
 			left: centered ? undefined : frame1_left.right
 			leftMargin: centered ? undefined : isNxt ? 40 : 32
 			right: centered ? parent.right : undefined
