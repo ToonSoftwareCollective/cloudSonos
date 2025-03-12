@@ -197,7 +197,7 @@ App {
                     getGroups()
                 }else{
                     if (debugOutput) console.log("sonos getHouseholds first and then groups fault response:" + xhrgetHouseholdsAndGroups.responseText)
-                    if (xhrgetHouseholdsAndGroups.responseText.indexOf("keymanagement.service")> 0){
+                    if ((xhrgetHouseholdsAndGroups.responseText.indexOf("keymanagement.service")> 0) || (xhrgetHouseholdsAndGroups.responseText.indexOf("Invalid Token")> 0)|| (xhrgetHouseholdsAndGroups.responseText.indexOf("Expired Token")> 0)){
                         tokenOK = false
                         SonosTokenFunctions.getRefreshToken()
                     }
